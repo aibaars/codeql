@@ -1,0 +1,22 @@
+name: CodeQL with post script
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: CodeQL
+      uses: ./codeql
+    - name: Run build
+      run: |
+         echo "int main() {return 1;}" > main.c 
+         gcc -c main.c
+    - uses: actions/upload-artifact@master
+      with:
+        name: snapshot
+        path: project
+
