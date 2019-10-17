@@ -1,0 +1,24 @@
+name: CodeQL as two separate actions
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Init tracer
+      uses: ./codeql-setup
+    - name: Run build
+      run: |
+         echo "int main() {return 1;}" > main.c 
+         gcc -c main.c
+    - name: Finalize database
+      uses: ./codeql-main
+    - uses: actions/upload-artifact@master
+      with:
+        name: snapshot
+        path: project
+
