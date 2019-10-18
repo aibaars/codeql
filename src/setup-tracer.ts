@@ -56,13 +56,14 @@ async function run() {
                            ]);
     let libTrace = '${LIB}trace.so';
     if (process.platform == 'darwin') {
-       libTrace = 'libtrace.dylib';
+       core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlTools, 'libtrace.dylib'));
        // create parent folder of SEMMLE_COPY_EXECUTABLES_ROOT
        io.mkdirP('/private/tmp/semmle-c-tracer');
        core.exportVariable('SEMMLE_COPY_EXECUTABLES_ROOT', '/private/tmp/semmle-c-tracer/build');
        core.exportVariable('SEMMLE_COPY_EXECUTABLES', 'true');
+    } else {
+       core.exportVariable('LD_PRELOAD', path.join(codeqlTools, '${LIB}trace.so'));
     }
-    core.exportVariable('LD_PRELOAD', path.join(codeqlTools, libTrace));
     core.exportVariable('ODASA_TRACER_CONFIGURATION', tracerConf);
     core.exportVariable('ODASA_SNAPSHOT', snapshotFolder);
     core.exportVariable('SEMMLE_DIST', codeqlDist);
