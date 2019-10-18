@@ -1,7 +1,13 @@
 name: 'Setup CodeQL'
 description: 'Setup the CodeQL tracer'
 author: 'GitHub'
-inputs: {}
+inputs:
+  tools:
+    description: URL of CodeQL tools
+    required: true
+  license:
+    description: URL of CodeQL license
+    required: true
 runs:
   using: 'node12'
   main: '../lib/setup-tracer.js'

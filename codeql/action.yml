@@ -1,7 +1,13 @@
 name: 'CodeQL'
 description: 'CodeQL analysis with `post` script'
 author: 'GitHub'
-inputs: {}
+inputs:
+  tools:
+    description: URL of CodeQL tools
+    required: true
+  license:
+    description: URL of CodeQL license
+    required: true
 runs:
   using: 'node12'
   main: '../lib/setup-tracer.js'

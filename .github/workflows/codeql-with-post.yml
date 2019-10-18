@@ -11,6 +11,9 @@ jobs:
     - uses: actions/checkout@v1
     - name: CodeQL
       uses: ./codeql
+      with:
+        tools: ${{ secrets.CODEQL_URL }}
+        license: ${{ secrets.CODEQL_LICENSE_URL }}
     - name: Run build
       run: |
          echo "int main() {return 1;}" > main.c 
