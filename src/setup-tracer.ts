@@ -12,6 +12,7 @@ async function run() {
     const codeqlURL = core.getInput('tools', { required: true });
     const licenseURL = core.getInput('license', { required: true });
 
+    core.startGroup('Setup CodeQL tools');
     let codeqlFolder = toolcache.find('CodeQL', version);
     if (codeqlFolder) {
       core.debug(`CodeQL found in cache ${codeqlFolder}`);
@@ -20,6 +21,7 @@ async function run() {
       const codeqlExtracted = await toolcache.extractZip(codeqlPath);
       codeqlFolder = await toolcache.cacheDir(codeqlExtracted, 'CodeQL', version);
     }
+    core.endGroup();
    
     const codeqlDist = path.join(codeqlFolder, 'odasa');
     const codeqlTools = path.join(codeqlDist, 'tools');
@@ -58,6 +60,7 @@ async function run() {
        // create parent folder of SEMMLE_COPY_EXECUTABLES_ROOT
        io.mkdirP('/private/tmp/semmle-c-tracer');
        core.exportVariable('SEMMLE_COPY_EXECUTABLES_ROOT', '/private/tmp/semmle-c-tracer/build');
+       core.exportVariable('SEMMLE_COPY_EXECUTABLES', 'true');
     }
     core.exportVariable('LD_PRELOAD', path.join(codeqlTools, libTrace));
     core.exportVariable('ODASA_TRACER_CONFIGURATION', tracerConf);
