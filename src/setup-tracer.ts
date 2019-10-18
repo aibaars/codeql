@@ -41,7 +41,7 @@ async function run() {
          tracerConf
        ]);
     // patch up slashes
-    await exec.exec('sed', ['s#\\\\#/#g#', '-i', tracerConf]);
+    await exec.exec('sed', ['s#\\\\#/#g', '-i', tracerConf]);
     await exec.exec('sed', ['s#{0}#' + path.join(codeqlFolder, 'odasa') + '#g', '-i', tracerConf]);
     await exec.exec('sed', ['s#{1}#' + path.resolve('build-tracer.log') + '#g', '-i', tracerConf]);
  
