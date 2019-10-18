@@ -37,7 +37,7 @@ async function run() {
        [ '-cp', 
          path.join(codeqlTools, 'odasa.jar'), 
          'com.semmle.util.io.CompilerReplacementConfigParser', 
-         path.join(codeqlTools, 'c-compiler-settings'),
+         path.join(codeqlTools, 'c-compiler-settings-unix'),
          tracerConf
        ]);
     // patch up slashes
