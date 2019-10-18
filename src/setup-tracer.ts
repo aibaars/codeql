@@ -49,7 +49,7 @@ async function run() {
     await exec.exec(codeqlOdasa, [ 'createProject', 'project', '--language', language]);
     await exec.exec(codeqlOdasa, 
                            [ 'addSnapshot', '--project', 'project', '--name', 'snapshot', '--default-date', 
-                             '--build', '/bin/true', '--checkout', '/bin/true', '--overwrite', 
+                             '--build', 'true', '--checkout', 'true', '--overwrite', 
                              '--source-location', path.resolve('.')
                            ]);
 
