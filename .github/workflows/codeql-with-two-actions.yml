@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [macOS-latest, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -20,7 +20,6 @@ jobs:
         license: ${{ secrets.CODEQL_LICENSE_URL }}
     - name: Run build
       run: |
-         echo "int main() {return 1;}" > main.c 
          gcc -c main.c
     - name: Finalize database
       uses: ./codeql-main

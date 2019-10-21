@@ -2,7 +2,8 @@ import * as core from '@actions/core';
 import * as toolcache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
-import * as path from 'path'
+import * as path from 'path';
+import * as fs from 'fs';
 
 async function run() {
   try {
@@ -33,20 +34,25 @@ async function run() {
     await io.mkdirP(path.join(codeqlDist, 'license'));
     await io.cp(licensePath, path.join(codeqlDist, 'license', 'license.dat'));
 
+    const compilerSettings = path.join(codeqlTools, 'c-compiler-settings-' + (process.platform == 'win32' ? 'win' : 'unix'));
     // Generate tracer configuration
     await exec.exec(
        'java', 
        [ '-cp', 
          path.join(codeqlTools, 'odasa.jar'), 
          'com.semmle.util.io.CompilerReplacementConfigParser', 
-         path.join(codeqlTools, 'c-compiler-settings-unix'),
+         compilerSettings,
          tracerConf
        ]);
+
+    var data = fs.readFileSync(tracerConf, 'utf8');
     // patch up slashes
-    await exec.exec('sed', ['-i.bak', '-e', 's#\\\\#/#g', tracerConf]);
-    await exec.exec('sed', ['-i.bak', '-e', 's#{0}#' + path.join(codeqlFolder, 'odasa') + '#g', tracerConf]);
-    await exec.exec('sed', ['-i.bak', '-e', 's#{1}#' + path.resolve('build-tracer.log') + '#g', tracerConf]);
- 
+    if (process.platform != 'win32') {
+      data = data.replace(new RegExp('\\\\', 'g'), '/');
+    }
+    data = data.replace(new RegExp('\\{0\\}', 'g'), codeqlDist);
+    data = data.replace(new RegExp('\\{1\\}', 'g'), path.resolve('build-tracer.log'));
+    fs.writeFileSync(tracerConf, data);
 
     await exec.exec(codeqlOdasa, [ 'createProject', 'project', '--language', language]);
     await exec.exec(codeqlOdasa, 
@@ -54,13 +60,15 @@ async function run() {
                              '--build', 'true', '--checkout', 'true', '--overwrite', 
                              '--source-location', path.resolve('.')
                            ]);
-    let libTrace = '${LIB}trace.so';
+
     if (process.platform == 'darwin') {
        core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlTools, 'libtrace.dylib'));
        // create parent folder of SEMMLE_COPY_EXECUTABLES_ROOT
        io.mkdirP('/private/tmp/semmle-c-tracer');
        core.exportVariable('SEMMLE_COPY_EXECUTABLES_ROOT', '/private/tmp/semmle-c-tracer/build');
        core.exportVariable('SEMMLE_COPY_EXECUTABLES', 'true');
+    } else if (process.platform == 'win32') {
+       await exec.exec('powershell', [ 'src\\inject-tracer.ps1' ], {env: {'ODASA_TRACER_CONFIGURATION': tracerConf}});
     } else {
        core.exportVariable('LD_PRELOAD', path.join(codeqlTools, '${LIB}trace.so'));
     }
