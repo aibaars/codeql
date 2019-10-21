@@ -18,6 +18,10 @@ jobs:
       with:
         tools: ${{ secrets.CODEQL_URL }}
         license: ${{ secrets.CODEQL_LICENSE_URL }}
+    - name: Copy bash to SIP free area for OSX
+      if: matrix.os == 'macOS-latest'
+      run: |
+         cp /bin/bash /usr/local/bin/
     - name: Run build
       run: |
          gcc -c main.c
