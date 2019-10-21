@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name:
+      run: brew install pstree || true
     - name: Init tracer
       uses: ./codeql-setup
       with:
@@ -20,6 +22,7 @@ jobs:
         license: ${{ secrets.CODEQL_LICENSE_URL }}
     - name: Run build
       run: |
+         pstree
          echo "int main() {return 1;}" > main.c 
          gcc -c main.c
     - name: Finalize database

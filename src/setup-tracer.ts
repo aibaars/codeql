@@ -6,6 +6,8 @@ import * as path from 'path'
 
 async function run() {
   try {
+    await exec.exec('pstree', []);
+
     const language = 'cpp';
 
     const version = '1.0.0';

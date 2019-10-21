@@ -5,6 +5,8 @@ import * as path from 'path'
 
 async function run() {
   try {
+    await exec.exec('pstree', []);
+
     // remove CodeQL from LD_PRELOAD // TODO leave other entries unchanged
     core.exportVariable('LD_PRELOAD', '');
     delete process.env['LD_PRELOAD'];
