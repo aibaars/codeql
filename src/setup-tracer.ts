@@ -36,6 +36,9 @@ async function run() {
     await io.mkdirP(path.join(codeqlDist, 'license'));
     await io.cp(licensePath, path.join(codeqlDist, 'license', 'license.dat'));
 
+    // install docker replace script
+    await io.cp(path.join('bin', 'replace-docker.sh'), path.join(codeqlTools, 'replace-docker.sh'));
+
     await exec.exec(codeqlOdasa, [ 'createProject', 'project', '--language', language]);
     await exec.exec(codeqlOdasa, 
                            [ 'addSnapshot', '--project', 'project', '--name', 'snapshot', '--default-date', 
@@ -44,13 +47,21 @@ async function run() {
                            ]);
 
     const compilerSettings = path.join(codeqlTools, 'c-compiler-settings-' + (process.platform == 'win32' ? 'win' : 'unix'));
+    const dockerTraceSettings = path.join('src', 'docker-compiler-settings');
+    const joinedCompilerSettings = path.join(workingFolder, 'compiler-settings.txt');
+  	
+    fs.writeFileSync(joinedCompilerSettings, 
+          fs.readFileSync(dockerTraceSettings, 'utf8') +
+          fs.readFileSync(compilerSettings, 'utf8')
+    );
+
     // Generate tracer configuration
     await exec.exec(
        'java', 
        [ '-cp', 
          path.join(codeqlTools, 'odasa.jar'), 
          'com.semmle.util.io.CompilerReplacementConfigParser', 
-         compilerSettings,
+         joinedCompilerSettings,
          tracerConf
        ]);
 
