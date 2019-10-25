@@ -27,12 +27,21 @@ async function run() {
     const codeqlDist = path.join(codeqlFolder, 'odasa');
     const codeqlTools = path.join(codeqlDist, 'tools');
     const codeqlOdasa = path.join(codeqlTools, 'odasa');
-    const tracerConf = path.resolve('tracer.conf');
+
     const snapshotFolder = path.resolve('project', 'snapshot');
+    const workingFolder = path.join(snapshotFolder, 'working');
+    const tracerConf = path.join(workingFolder, 'tracer.config');
 
     const licensePath = await toolcache.downloadTool(licenseURL);
     await io.mkdirP(path.join(codeqlDist, 'license'));
     await io.cp(licensePath, path.join(codeqlDist, 'license', 'license.dat'));
+
+    await exec.exec(codeqlOdasa, [ 'createProject', 'project', '--language', language]);
+    await exec.exec(codeqlOdasa, 
+                           [ 'addSnapshot', '--project', 'project', '--name', 'snapshot', '--default-date', 
+                             '--build', 'true', '--checkout', 'true', '--overwrite', 
+                             '--source-location', path.resolve('.')
+                           ]);
 
     const compilerSettings = path.join(codeqlTools, 'c-compiler-settings-' + (process.platform == 'win32' ? 'win' : 'unix'));
     // Generate tracer configuration
@@ -51,15 +60,8 @@ async function run() {
       data = data.replace(new RegExp('\\\\', 'g'), '/');
     }
     data = data.replace(new RegExp('\\{0\\}', 'g'), codeqlDist);
-    data = data.replace(new RegExp('\\{1\\}', 'g'), path.resolve('build-tracer.log'));
+    data = data.replace(new RegExp('\\{1\\}', 'g'), path.join(snapshotFolder, 'log', 'build-tracer.log'));
     fs.writeFileSync(tracerConf, data);
-
-    await exec.exec(codeqlOdasa, [ 'createProject', 'project', '--language', language]);
-    await exec.exec(codeqlOdasa, 
-                           [ 'addSnapshot', '--project', 'project', '--name', 'snapshot', '--default-date', 
-                             '--build', 'true', '--checkout', 'true', '--overwrite', 
-                             '--source-location', path.resolve('.')
-                           ]);
 
     if (process.platform == 'darwin') {
        core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlTools, 'libtrace.dylib'));
