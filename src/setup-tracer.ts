@@ -85,6 +85,12 @@ async function run() {
     } else {
        core.exportVariable('LD_PRELOAD', path.join(codeqlTools, '${LIB}trace.so'));
     }
+
+    // docker may be a static binary, turning on SEMMLE_HANDLE_STATIC_BINARIES makes it traceable
+    core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
+    const suffix = process.platform == 'darwin' ? '-osx' : process.platform == 'win32' ? '.exe' : '-linux';
+    core.exportVariable('SEMMLE_RUNNER', path.join(codeqlTools, 'runner' + suffix));
+
     core.exportVariable('ODASA_TRACER_CONFIGURATION', tracerConf);
     core.exportVariable('ODASA_SNAPSHOT', snapshotFolder);
     core.exportVariable('ODASA_HOME', codeqlDist);
