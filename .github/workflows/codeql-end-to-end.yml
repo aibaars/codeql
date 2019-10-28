@@ -1,9 +1,6 @@
-name: CodeQL with post script
+name: CodeQL end-to-end analysis
 
-on:
-  push:
-    branches-ignore:
-      - 'separate_workflow'
+on: [push]
 
 jobs:
   build:
@@ -12,17 +9,13 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: CodeQL
-      uses: ./codeql
+    - name: analysis
+      uses: ./codeql-self-contained
       with:
+        language: cpp
         tools: ${{ secrets.CODEQL_URL }}
         license: ${{ secrets.CODEQL_LICENSE_URL }}
-    - name: Run build
-      run: |
-         echo "int main() {return 1;}" > main.c 
-         gcc -c main.c
     - uses: actions/upload-artifact@master
       with:
         name: snapshot
         path: project
-

@@ -1,0 +1,16 @@
+name: 'CodeQL analysis'
+description: 'Run a bunch of QL queries on your codebase'
+author: 'GitHub (Semmle)'
+inputs:
+  language:
+    description: language to analyse (for now only one)
+    required: true
+  tools:
+    description: URL of CodeQL tools
+    required: true
+  license:
+    description: URL of CodeQL license
+    required: true
+runs:
+  using: 'node12'
+  main: '../lib/all-in-one.js'
