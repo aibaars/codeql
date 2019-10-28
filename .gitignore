@@ -92,3 +92,9 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Files and directories created during local testing
+main.o
+_lgtm_detected_source_root
+project/
+out/

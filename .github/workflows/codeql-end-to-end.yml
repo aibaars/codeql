@@ -1,0 +1,24 @@
+name: CodeQL end-to-end analysis (native)
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: analysis
+      uses: ./codeql-self-contained
+      with:
+        language: cpp
+        tools: ${{ secrets.CODEQL_URL }}
+        license: ${{ secrets.CODEQL_LICENSE_URL }}
+    - uses: actions/upload-artifact@master
+      with:
+        name: snapshot
+        path: project
