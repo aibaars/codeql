@@ -25,7 +25,9 @@ async function run() {
     const codeqlDist = path.join(codeqlFolder, 'odasa');
     const codeqlTools = path.join(codeqlDist, 'tools');
     const codeqlOdasa = path.join(codeqlTools, 'odasa');
-    const snapshotFolder = path.resolve('project', 'snapshot');
+    const projectFolder = path.resolve('project');
+    await io.mkdirP(projectFolder);
+    const snapshotFolder = path.join(projectFolder, 'snapshot');
 
     const licenseURL = core.getInput('license', { required: true });
     const licensePath = await toolcache.downloadTool(licenseURL);
@@ -38,8 +40,8 @@ async function run() {
     await io.mkdirP(out);
     const lgtmConfig = path.join('out', 'lgtm.effective.yml');
     fs.writeFileSync(lgtmConfig,"");
-    var possibleConfigLocations = [path.resolve('.','lgtm.yml'), path.resolve('.','.lgtm.yml')]
-    for (let loc in possibleConfigLocations) {
+    var possibleConfigLocations = [path.resolve('lgtm.yml'), path.resolve('.lgtm.yml')]
+    for (let loc of possibleConfigLocations) {
         if (fs.existsSync(loc)) {
             fs.copyFileSync(loc, lgtmConfig)
             break;
@@ -49,36 +51,35 @@ async function run() {
     await exec.exec('java', ['-jar',
                       path.join(buildtools, 'lgtmbuild.jar'),
                       buildtools,
-                      'project',
+                      projectFolder,
                       sourceLocation,
                       language,
                       lgtmConfig]);
     
     await exec.exec(codeqlOdasa, 
-                           [ 'addSnapshot', '--project', 'project',
-                             '--name', 'snapshot', '--default-date', 
-                            // '--build', 'true', 
-                            //  '--checkout', 'true', 
-                            // '--build', 'gcc -c main.c',
+                           [ 'addSnapshot', '--project', projectFolder,
+                             '--name', 'snapshot', '--default-date',
+                             '--default-build',
+                             '--default-checkout',
                              '--overwrite', 
                              '--source-location', sourceLocation]);
 
     await exec.exec(codeqlOdasa,
                             [ 'findGeneratedCode',
                               '--prepare',
-                              '--project', 'project',
+                              '--project', projectFolder,
                               snapshotFolder]);
 
     await exec.exec(codeqlOdasa, [ 'buildSnapshot',
                                    '--fail-early', '--ignore-errors',
                                    '--overwrite',
-                                   '--project', 'project',
-                                   snapshotFolder]);
+                                   '--project', projectFolder,
+                                   '--snapshot', snapshotFolder]);
 
     await exec.exec(codeqlOdasa,
                             [ 'findGeneratedCode',
-                              '--output',
-                              '--project', 'project',
+                              '--output', path.join(projectFolder, 'generated_files.txt'),
+                              '--project', projectFolder,
                               snapshotFolder])
 
   } catch (error) {
