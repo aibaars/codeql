@@ -15,6 +15,9 @@ async function run() {
       core.exportVariable('LD_PRELOAD', '');
       delete process.env['LD_PRELOAD'];
     }
+    core.exportVariable('ODASA_TRACER_CONFIGURATION', '');
+    delete process.env['ODASA_TRACER_CONFIGURATION'];
+
     const codeqlDist = process.env['ODASA_HOME'] || 'ODASA_HOME';
     const codeqlOdasa = path.join(codeqlDist, 'tools', 'odasa');
     const snapshotFolder = process.env['ODASA_SNAPSHOT'] || 'ODASA_SNAPSHOT';
