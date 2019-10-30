@@ -47,6 +47,9 @@ async function run() {
             break;
         }
     }
+
+    if (!process.env.SEMMLE_JAVA_HOME && process.env.JAVA_HOME)
+      core.exportVariable("SEMMLE_JAVA_HOME", process.env.JAVA_HOME);
     
     await exec.exec('java', ['-jar',
                       path.join(buildtools, 'lgtmbuild.jar'),
