@@ -18,11 +18,11 @@ async function run() {
     core.exportVariable('ODASA_TRACER_CONFIGURATION', '');
     delete process.env['ODASA_TRACER_CONFIGURATION'];
 
-    const codeqlDist = process.env['ODASA_HOME'] || 'ODASA_HOME';
-    const codeqlOdasa = path.join(codeqlDist, 'tools', 'odasa');
-    const snapshotFolder = process.env['ODASA_SNAPSHOT'] || 'ODASA_SNAPSHOT';
+    const codeqlDist = process.env['CODEQL_DIST'] || 'CODEQL_DIST';
+    const codeqlCmd = path.join(codeqlDist, 'codeql' + (process.platform == 'win32' ? '.cmd' : ''));
+    const databaseFolder = process.env['CODEQL_DB'] || 'CODEQL_DB';
     
-    await exec.exec(codeqlOdasa, [ 'buildSnapshot', '--skip-build', '--snapshot', snapshotFolder]);
+    await exec.exec(codeqlCmd, ['database', 'finalize', databaseFolder]);
   } catch (error) {
     core.setFailed(error.message);
   }
