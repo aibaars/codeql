@@ -48,9 +48,25 @@ async function run() {
         }
     }
 
-    if (!process.env.SEMMLE_JAVA_HOME && process.env.JAVA_HOME)
-      core.exportVariable("SEMMLE_JAVA_HOME", process.env.JAVA_HOME);
-    
+    if (!process.env.SEMMLE_JAVA_HOME) {
+      let platformSuffix;
+      switch (process.platform) {
+        case 'darwin': {
+          platformSuffix = 'osx';
+          break;
+        }
+        case 'win32': {
+          platformSuffix = 'win';
+          break;
+        }
+        default: {
+          platformSuffix = 'linux';
+        }
+      }
+
+      core.exportVariable("SEMMLE_JAVA_HOME", path.join(codeqlTools,'java-'+platformSuffix));
+    }
+
     await exec.exec('java', ['-jar',
                       path.join(buildtools, 'lgtmbuild.jar'),
                       buildtools,
