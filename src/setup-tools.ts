@@ -14,10 +14,12 @@ export class CodeQLSetup {
         this.dist = codeqlDist;
         this.tools = path.join(this.dist, 'tools');
         this.cmd = cmd;
-
         // TODO check process.arch ?
         if (process.platform == 'win32') {
            this.platform = 'win64';
+           if (this.cmd.endsWith('codeql')) {
+               this.cmd += ".cmd";
+           }
         } else if (process.platform == 'linux') {
            this.platform = 'linux64';
         } else if (process.platform == 'darwin') {
