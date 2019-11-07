@@ -18,10 +18,9 @@ jobs:
         language: cpp
     - name: Run build
       run: |
-         echo "int main() {return 1;}" > main.c 
          gcc -c main.c
-    - uses: actions/upload-artifact@master
-      with:
-        name: database
-        path: database
+#    - uses: actions/upload-artifact@master
+#      with:
+#        name: database
+#        path: database
 
