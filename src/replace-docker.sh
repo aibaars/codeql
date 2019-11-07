@@ -1,9 +1,11 @@
 #! /bin/bash
 
+CODEQL_DB="${CODEQL_ACTION_DB}";
+
 # rewrite docker run command, but leave all other untouched
 if [ "$2" == "run" ]; then
   # rewrite paths in tracer config
-  cat ${CODEQL_DB}/working/tracing/tracer.config | sed "s:${CODEQL_DB}:/opt/codeql/database:g" | sed "s:${CODEQL_DIST}:/opt/codeql/dist:g" > ${CODEQL_DB}/working/tracing/trace-docker.config
+  cat "${CODEQL_ACTION_TRACER_CONFIGURATION}" | sed "s:${CODEQL_DB}:/opt/codeql/database:g" | sed "s:${CODEQL_DIST}:/opt/codeql/dist:g" > ${CODEQL_DB}/working/tracing/trace-docker.config
 
   # docker run
   COMMAND=("$1" "$2")

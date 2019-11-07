@@ -73,6 +73,7 @@ async function run() {
 
     // TODO: make this a "private" environment variable of the action
     core.exportVariable('CODEQL_ACTION_DB', databaseFolder);
+    core.exportVariable('CODEQL_ACTION_TRACER_CONFIGURATION', mainTracerConfig.spec);
     core.exportVariable('CODEQL_ACTION_CMD', codeqlSetup.cmd);
   } catch (error) {
     core.setFailed(error.message);
