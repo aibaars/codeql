@@ -15,6 +15,7 @@ jobs:
       uses: ./codeql
       with:
         tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
     - name: Run build
       run: |
          echo "int main() {return 1;}" > main.c 

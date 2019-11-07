@@ -28,7 +28,7 @@ async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, co
 
 async function run() {
   try {
-    const language = 'cpp';
+    const language = core.getInput('language', { required: true });
     const sourceRoot = path.resolve();
 
     core.startGroup('Setup CodeQL tools');
