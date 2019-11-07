@@ -1,5 +1,5 @@
 **/docker:
   replace yes
-  invoke ${odasa_tools}/replace-docker.sh
+  invoke ${config_dir}/replace-docker.sh
   prepend ${compiler}
   trace no

@@ -6,6 +6,26 @@ import * as fs from 'fs';
 import * as tmp from 'tmp';
 import * as setuptools from './setup-tools';
 
+type TracerConfig = {
+    spec: string;
+    env: {[key: string]: string};
+};
+
+async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, compilerSpec?: string) : Promise<TracerConfig> {
+    const compilerSpecArg = compilerSpec ? [ "--compiler-spec=" + compilerSpec] : [];
+    let output = '';
+    await exec.exec(codeql.cmd, ['database', 'trace-command', database,
+          ...compilerSpecArg,
+          process.execPath, path.resolve('lib/tracer-env.js') ],
+          { silent: true, listeners: 
+             { stdout: (data: Buffer) => { output += data.toString(); }
+             , stderr: (data: Buffer) => { process.stderr.write(data); } 
+             }
+          }
+    );
+    return JSON.parse(output);   
+}
+
 async function run() {
   try {
     const language = 'cpp';
@@ -16,60 +36,33 @@ async function run() {
     core.endGroup();
    
     const databaseFolder = path.resolve('database');
-    const workingFolder = path.join(databaseFolder, 'working');
-    const tracerConf = path.join(workingFolder, 'tracing', 'tracer.config');
-
-    // install docker replace script
-    await io.cp(path.join('bin', 'replace-docker.sh'), path.join(codeqlSetup.tools, 'replace-docker.sh'));
-
     await exec.exec(codeqlSetup.cmd, ['database', 'init', databaseFolder, '--language=' + language, '--source-root=' + sourceRoot ]);
-    await io.mkdirP(path.join(workingFolder, 'tracing'));
-    await io.mkdirP(path.join(databaseFolder, 'log'));
 
-    const compilerTraceSettings = path.join(codeqlSetup.dist, language, 'tools', codeqlSetup.platform, 'compiler-tracing.spec');
-    const dockerTraceSettings = path.join('src', 'docker-compiler-settings');
-    
-    let tracerLog = ""
-    let count = 0;
-    let compilerSettingsText = "";
-    for (const file of [dockerTraceSettings, compilerTraceSettings]) {
-      const tempFile = tmp.tmpNameSync({ 'dir': path.join(workingFolder, 'tracing') });
+    const mainTracerConfig = await tracerConfig(codeqlSetup, databaseFolder);
+    const dockerTracerConfig = await tracerConfig(codeqlSetup, databaseFolder, path.resolve('src', 'docker-compiler-settings'));
 
-      // Generate tracer configuration
-      await exec.exec(
-       'java', 
-       [ '-cp', 
-         path.join(codeqlSetup.tools, 'codeql.jar'), 
-         'com.semmle.util.io.CompilerReplacementConfigParser', 
-         file,
-         tempFile
-       ]);
-       let data = fs.readFileSync(tempFile, 'utf8');
-       // patch up slashes
-       if (process.platform != 'win32') {
-         data = data.replace(new RegExp('\\\\', 'g'), '/');
-       }
-       data = data.replace(new RegExp('\\{0\\}', 'g'), codeqlSetup.dist);
-       data = data.replace(new RegExp('\\{1\\}', 'g'), path.join(databaseFolder, 'log', 'build-tracer.log'));
+    // prepend docker config to main tracer config
+    const mainLines = fs.readFileSync(mainTracerConfig.spec, 'utf8').split(/\r?\n/);
+    const dockerLines = fs.readFileSync(dockerTracerConfig.spec, 'utf8').split(/\r?\n/);
 
-       const tempLines = data.split(/\r?\n/);
-       tracerLog = tempLines[0];
-       count += parseInt(tempLines[1], 10);
-       compilerSettingsText += tempLines.slice(2).join('\n') + '\n';
-    }
-     	
-    fs.writeFileSync(tracerConf, 
-          tracerLog + '\n' + count + '\n' + compilerSettingsText
-    );
+    const count = parseInt(mainLines[1], 10) + parseInt(dockerLines[1], 10);
+    const lines =
+     [ mainLines[0], 
+       count.toString(10),
+       ...dockerLines.slice(2),
+       ...mainLines.slice(2),
+     ];
+    fs.writeFileSync(mainTracerConfig.spec, lines.join('\n'));
 
+    for (let entry of Object.entries(mainTracerConfig.env)) {
+       core.exportVariable(entry[0], entry[1]);
+    } 
+
+    core.exportVariable('ODASA_TRACER_CONFIGURATION', mainTracerConfig.spec);
     if (process.platform == 'darwin') {
        core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlSetup.tools, 'osx64', 'libtrace.dylib'));
-       // create parent folder of SEMMLE_COPY_EXECUTABLES_ROOT
-       io.mkdirP('/private/tmp/semmle-c-tracer');
-       core.exportVariable('SEMMLE_COPY_EXECUTABLES_ROOT', '/private/tmp/semmle-c-tracer/build');
-       core.exportVariable('SEMMLE_COPY_EXECUTABLES', 'true');
     } else if (process.platform == 'win32') {
-       await exec.exec('powershell', [ 'src\\inject-tracer.ps1' ], {env: {'ODASA_TRACER_CONFIGURATION': tracerConf}});
+       await exec.exec('powershell', [ 'src\\inject-tracer.ps1' ], {env: {'ODASA_TRACER_CONFIGURATION': mainTracerConfig.spec}});
     } else {
        core.exportVariable('LD_PRELOAD', path.join(codeqlSetup.tools, 'linux64', '${LIB}trace.so'));
     }
@@ -78,12 +71,9 @@ async function run() {
     core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
     core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
 
-    core.exportVariable('ODASA_TRACER_CONFIGURATION', tracerConf);
-    core.exportVariable('CODEQL_DB', databaseFolder);
-    core.exportVariable('CODEQL_DIST', codeqlSetup.dist);
-    core.exportVariable('SOURCE_ARCHIVE', path.join(databaseFolder, 'src'));
-    core.exportVariable('TRAP_FOLDER', path.join(databaseFolder, 'trap'));
-
+    // TODO: make this a "private" environment variable of the action
+    core.exportVariable('CODEQL_ACTION_DB', databaseFolder);
+    core.exportVariable('CODEQL_ACTION_CMD', codeqlSetup.cmd);
   } catch (error) {
     core.setFailed(error.message);
   }

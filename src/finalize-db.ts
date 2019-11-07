@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import * as toolcache from '@actions/tool-cache';
 import * as exec from '@actions/exec';
 import * as path from 'path'
+import * as setuptools from './setup-tools';
 
 async function run() {
   try {
@@ -18,10 +19,9 @@ async function run() {
     core.exportVariable('ODASA_TRACER_CONFIGURATION', '');
     delete process.env['ODASA_TRACER_CONFIGURATION'];
 
-    const codeqlDist = process.env['CODEQL_DIST'] || 'CODEQL_DIST';
-    const codeqlCmd = path.join(codeqlDist, 'codeql' + (process.platform == 'win32' ? '.cmd' : ''));
-    const databaseFolder = process.env['CODEQL_DB'] || 'CODEQL_DB';
-    
+    const databaseFolder = process.env['CODEQL_ACTION_DB'] || 'CODEQL_ACTION_DB';
+    const codeqlCmd = process.env['CODEQL_ACTION_CMD'] || 'CODEQL_ACTION_CMD';
+ 
     await exec.exec(codeqlCmd, ['database', 'finalize', databaseFolder]);
   } catch (error) {
     core.setFailed(error.message);
