@@ -16,7 +16,7 @@ async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, co
     let output = '';
     await exec.exec(codeql.cmd, ['database', 'trace-command', database,
           ...compilerSpecArg,
-          process.execPath, path.resolve('lib/tracer-env.js') ],
+          process.execPath, path.resolve(__dirname, 'tracer-env.js') ],
           { silent: true, listeners: 
              { stdout: (data: Buffer) => { output += data.toString(); }
              , stderr: (data: Buffer) => { process.stderr.write(data); } 
@@ -39,7 +39,7 @@ async function run() {
     await exec.exec(codeqlSetup.cmd, ['database', 'init', databaseFolder, '--language=' + language, '--source-root=' + sourceRoot ]);
 
     const mainTracerConfig = await tracerConfig(codeqlSetup, databaseFolder);
-    const dockerTracerConfig = await tracerConfig(codeqlSetup, databaseFolder, path.resolve('src', 'docker-compiler-settings'));
+    const dockerTracerConfig = await tracerConfig(codeqlSetup, databaseFolder, path.resolve(__dirname, '..', 'src', 'docker-compiler-settings'));
 
     // prepend docker config to main tracer config
     const mainLines = fs.readFileSync(mainTracerConfig.spec, 'utf8').split(/\r?\n/);
