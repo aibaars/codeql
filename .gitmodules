@@ -4,3 +4,6 @@
 [submodule "repos/git"]
 	path = repos/git
 	url = https://github.com/git/git
+[submodule "repos/SmartSql"]
+	path = repos/SmartSql
+	url = https://github.com/dotnetcore/SmartSql

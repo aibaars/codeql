@@ -1,0 +1,23 @@
+name: Semmle/ql C#
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - uses: ./codeql-setup
+      with: 
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: csharp
+    - name: Build SmartSql with msbuild
+      run: |
+        cd repos/SmartSql
+        dotnet restore SmartSql.sln
+        msbuild SmartSql.sln
+    - uses: ./codeql-main
