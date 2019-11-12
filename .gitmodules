@@ -1,3 +1,6 @@
 [submodule "repos/commons-io"]
 	path = repos/commons-io
 	url = https://github.com/apache/commons-io
+[submodule "repos/git"]
+	path = repos/git
+	url = https://github.com/git/git
