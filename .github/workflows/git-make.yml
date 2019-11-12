@@ -1,0 +1,22 @@
+name: Compile GIT
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - uses: ./codeql-setup
+      with: 
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
+    - name: Build with Make
+      run: |
+        cd repos/git
+        make libgit.a
+    - uses: ./codeql-main
