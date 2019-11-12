@@ -1,0 +1,17 @@
+name: GCC test
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ./codeql-setup
+      with: 
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
+    - name: Build with Make
+      run: gcc main.c -o hello
