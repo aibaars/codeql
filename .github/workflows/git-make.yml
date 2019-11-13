@@ -27,5 +27,7 @@ jobs:
     - name: Build with Make
       run: |
         cd repos/git
+        make configure
+        sh ./configure
         make libgit.a
     - uses: ./codeql-main
