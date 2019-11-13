@@ -35,7 +35,10 @@ async function run() {
     const codeqlSetup = await setuptools.setupCodeQL();
     core.endGroup();
    
-    const databaseFolder = path.resolve('database');
+    let workspaceFolder = process.env['GITHUB_WORKSPACE'];
+    if (! workspaceFolder)
+      workspaceFolder = path.resolve('..');
+    const databaseFolder = path.resolve(workspaceFolder, 'database');
     await exec.exec(codeqlSetup.cmd, ['database', 'init', databaseFolder, '--language=' + language, '--source-root=' + sourceRoot ]);
 
     const mainTracerConfig = await tracerConfig(codeqlSetup, databaseFolder);
