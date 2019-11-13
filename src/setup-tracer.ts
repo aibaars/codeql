@@ -23,6 +23,8 @@ async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, co
              }
           }
     );
+    // strip off logging stuff before the first '{'
+    output = output.substring(output.indexOf('{'));
     return JSON.parse(output);   
 }
 
