@@ -5,12 +5,21 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macOS-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
+    - name: Copy bash to SIP free area for OSX
+      if: matrix.os == 'macOS-latest'
+      run: |
+         cp /bin/bash /usr/local/bin/
     - uses: ./codeql-setup
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
@@ -20,5 +29,5 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Maven
-      run: mvn -B package -Dmaven.test.skip=true -Drat.skip=true --file repos/commons-io/pom.xml
+      run: mvn -B package '-Dmaven.test.skip=true' '-Drat.skip=true' --file repos/commons-io/pom.xml
     - uses: ./codeql-main
