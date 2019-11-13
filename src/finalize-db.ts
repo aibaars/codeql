@@ -21,7 +21,10 @@ async function run() {
 
     const databaseFolder = process.env['CODEQL_ACTION_DB'] || 'CODEQL_ACTION_DB';
     const codeqlCmd = process.env['CODEQL_ACTION_CMD'] || 'CODEQL_ACTION_CMD';
- 
+    const traceCmd = process.env['CODEQL_ACTION_TRACE_CMD'];
+    if (traceCmd) {
+        await exec.exec(codeqlCmd, ['database', 'trace-command', databaseFolder, '--', traceCmd]);
+    }
     await exec.exec(codeqlCmd, ['database', 'finalize', databaseFolder]);
   } catch (error) {
     core.setFailed(error.message);

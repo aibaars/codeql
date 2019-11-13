@@ -22,7 +22,7 @@ const CRITICAL_TRACER_VARS = new Set(
 async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, compilerSpec?: string) : Promise<TracerConfig> {
     const compilerSpecArg = compilerSpec ? [ "--compiler-spec=" + compilerSpec] : [];
 
-    let envFile = path.resolve(database, 'working', 'tracing', 'env.tmp');
+    let envFile = path.resolve(database, 'working', 'env.tmp');
     await exec.exec(codeql.cmd, ['database', 'trace-command', database,
           ...compilerSpecArg,
           process.execPath, path.resolve(__dirname, 'tracer-env.js'), envFile ]
@@ -103,6 +103,18 @@ async function run() {
         core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
         core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
         core.exportVariable('CODEQL_ACTION_TRACER_CONFIGURATION', mainTracerConfig.spec);
+    } else {
+        let extractorPath = '';
+        await exec.exec(codeqlSetup.cmd, ['resolve', 'extractor', '--format=json', '--language=' + language],
+                        { silent: true,
+                          listeners: 
+                           { stdout: (data: Buffer) => { extractorPath += data.toString(); },
+                             stderr: (data: Buffer) => { process.stderr.write(data); }
+                           }
+                         });
+    
+        const ext = process.platform == 'win32' ? '.cmd' : '.sh';
+        core.exportVariable('CODEQL_ACTION_TRACE_CMD', path.resolve(JSON.parse(extractorPath), 'tools', 'autobuild' + ext));
     }
 
     // TODO: make this a "private" environment variable of the action
