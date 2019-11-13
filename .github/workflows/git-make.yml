@@ -1,4 +1,4 @@
-name: Compile GIT
+name: "C++: GIT"
 
 on: [push]
 
