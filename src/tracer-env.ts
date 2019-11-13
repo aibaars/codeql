@@ -30,21 +30,22 @@ if (config) {
     //     - length (4 bytes little endian)
     //     - text (length - 1 bytes); can be split on '=' to get name and value
     //     - NUL byte
-    const data : Buffer = fs.readFileSync(config + '.environment');
-    var index = 0;
-    const count = data.readInt32LE(0);
-    index += 4;
-    for (let i = 0; i < count; i++) { // >
-        const len = data.readInt32LE(index);
+    if (fs.existsSync(config + '.environment')) {
+        const data : Buffer = fs.readFileSync(config + '.environment');
+        var index = 0;
+        const count = data.readInt32LE(0);
         index += 4;
-        const line = data.toString('utf-8', index, index + len - 1);
-        const idx = line.indexOf('=');
-        if (idx != -1) {
-            info.env[line.substring(0, idx)] = line.substring(idx + 1);
+        for (let i = 0; i < count; i++) { // >
+            const len = data.readInt32LE(index);
+            index += 4;
+            const line = data.toString('utf-8', index, index + len - 1);
+            const idx = line.indexOf('=');
+            if (idx != -1) {
+                info.env[line.substring(0, idx)] = line.substring(idx + 1);
+            }
+            index += len;
         }
-        index += len;
     }
-
     process.stdout.write(JSON.stringify(info));
 } else {
     throw new Error('ODASA_TRACER_CONFIGURATION is not defined');
