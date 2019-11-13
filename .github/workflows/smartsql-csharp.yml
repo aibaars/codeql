@@ -1,4 +1,4 @@
-name: Semmle/ql C#
+name: "C#: SmartSql"
 
 on: [push]
 
