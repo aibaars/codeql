@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        os: [macOS-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -20,6 +20,12 @@ jobs:
       if: matrix.os == 'macOS-latest'
       run: |
          cp /bin/bash /usr/local/bin/
+         brew install autoconf automake
+    - name: Build with Make
+      run: |
+        cd repos/git
+        make configure
+        sh ./configure
     - uses: ./codeql-setup
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
@@ -27,7 +33,5 @@ jobs:
     - name: Build with Make
       run: |
         cd repos/git
-        make configure
-        sh ./configure
         make libgit.a
     - uses: ./codeql-main
