@@ -7,25 +7,51 @@ import * as tmp from 'tmp';
 import * as setuptools from './setup-tools';
 
 type TracerConfig = {
-    spec: string;
+    spec?: string;
     env: {[key: string]: string};
 };
 
+const CRITICAL_TRACER_VARS = new Set(
+  [ 'SEMMLE_PRELOAD_libtrace',
+  , 'SEMMLE_RUNNER',
+  , 'SEMMLE_COPY_EXECUTABLES_ROOT',
+  , 'SEMMLE_DEPTRACE_SOCKET',
+  , 'SEMMLE_JAVA_TOOL_OPTIONS'
+  ]);
+
 async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, compilerSpec?: string) : Promise<TracerConfig> {
     const compilerSpecArg = compilerSpec ? [ "--compiler-spec=" + compilerSpec] : [];
-    let output = '';
+
+    let envFile = path.resolve(database, 'working', 'tracing', 'env.tmp');
     await exec.exec(codeql.cmd, ['database', 'trace-command', database,
           ...compilerSpecArg,
-          process.execPath, path.resolve(__dirname, 'tracer-env.js') ],
-          { silent: true, listeners: 
-             { stdout: (data: Buffer) => { output += data.toString(); }
-             , stderr: (data: Buffer) => { process.stderr.write(data); } 
-             }
-          }
+          process.execPath, path.resolve(__dirname, 'tracer-env.js'), envFile ]
     );
-    // strip off logging stuff before the first '{'
-    output = output.substring(output.indexOf('{'));
-    return JSON.parse(output);   
+
+    const env : {[key: string]: string} = JSON.parse(fs.readFileSync(envFile, 'utf-8'));
+
+    const info : TracerConfig = { env: {} };
+    const config = env['ODASA_TRACER_CONFIGURATION'];
+    info.spec = config;
+    // Extract critical tracer variables from the environment
+    for (let entry of Object.entries(env)) {
+        const key = entry[0];
+        const value = entry[1];
+        // skip ODASA_TRACER_CONFIGURATION as it is handled separately
+        if (key == 'ODASA_TRACER_CONFIGURATION') {
+            continue;
+        }
+        // skip undefined values
+        if (typeof value === 'undefined') {
+            continue;
+        }
+        // Keep variables that do not exist in current environment. In addition always keep 
+        // critical and CODEQL_ variables
+        if( (!process.env[key] || CRITICAL_TRACER_VARS.has(key) || key.startsWith('CODEQL_'))) {
+            info.env[key] = value; 
+        }
+    }
+    return info;
 }
 
 async function run() {
@@ -45,40 +71,42 @@ async function run() {
 
     const mainTracerConfig = await tracerConfig(codeqlSetup, databaseFolder);
     const dockerTracerConfig = await tracerConfig(codeqlSetup, databaseFolder, path.resolve(__dirname, '..', 'src', 'docker-compiler-settings'));
+    
+    if (mainTracerConfig.spec && dockerTracerConfig.spec) {
+        // prepend docker config to main tracer config
+        const mainLines = fs.readFileSync(mainTracerConfig.spec, 'utf8').split(/\r?\n/);
+        const dockerLines = fs.readFileSync(dockerTracerConfig.spec, 'utf8').split(/\r?\n/);
 
-    // prepend docker config to main tracer config
-    const mainLines = fs.readFileSync(mainTracerConfig.spec, 'utf8').split(/\r?\n/);
-    const dockerLines = fs.readFileSync(dockerTracerConfig.spec, 'utf8').split(/\r?\n/);
+        const count = parseInt(mainLines[1], 10) + parseInt(dockerLines[1], 10);
+        const lines =
+         [ mainLines[0], 
+           count.toString(10),
+           ...dockerLines.slice(2),
+           ...mainLines.slice(2),
+         ];
+        fs.writeFileSync(mainTracerConfig.spec, lines.join('\n'));
 
-    const count = parseInt(mainLines[1], 10) + parseInt(dockerLines[1], 10);
-    const lines =
-     [ mainLines[0], 
-       count.toString(10),
-       ...dockerLines.slice(2),
-       ...mainLines.slice(2),
-     ];
-    fs.writeFileSync(mainTracerConfig.spec, lines.join('\n'));
+        for (let entry of Object.entries(mainTracerConfig.env)) {
+           core.exportVariable(entry[0], entry[1]);
+        } 
 
-    for (let entry of Object.entries(mainTracerConfig.env)) {
-       core.exportVariable(entry[0], entry[1]);
-    } 
+        core.exportVariable('ODASA_TRACER_CONFIGURATION', mainTracerConfig.spec);
+        if (process.platform == 'darwin') {
+           core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlSetup.tools, 'osx64', 'libtrace.dylib'));
+        } else if (process.platform == 'win32') {
+           await exec.exec('powershell', [ 'src\\inject-tracer.ps1' ], {env: {'ODASA_TRACER_CONFIGURATION': mainTracerConfig.spec}});
+        } else {
+           core.exportVariable('LD_PRELOAD', path.join(codeqlSetup.tools, 'linux64', '${LIB}trace.so'));
+        }
 
-    core.exportVariable('ODASA_TRACER_CONFIGURATION', mainTracerConfig.spec);
-    if (process.platform == 'darwin') {
-       core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlSetup.tools, 'osx64', 'libtrace.dylib'));
-    } else if (process.platform == 'win32') {
-       await exec.exec('powershell', [ 'src\\inject-tracer.ps1' ], {env: {'ODASA_TRACER_CONFIGURATION': mainTracerConfig.spec}});
-    } else {
-       core.exportVariable('LD_PRELOAD', path.join(codeqlSetup.tools, 'linux64', '${LIB}trace.so'));
+        // docker may be a static binary, turning on SEMMLE_HANDLE_STATIC_BINARIES makes it traceable
+        core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
+        core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
+        core.exportVariable('CODEQL_ACTION_TRACER_CONFIGURATION', mainTracerConfig.spec);
     }
-
-    // docker may be a static binary, turning on SEMMLE_HANDLE_STATIC_BINARIES makes it traceable
-    core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
-    core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
 
     // TODO: make this a "private" environment variable of the action
     core.exportVariable('CODEQL_ACTION_DB', databaseFolder);
-    core.exportVariable('CODEQL_ACTION_TRACER_CONFIGURATION', mainTracerConfig.spec);
     core.exportVariable('CODEQL_ACTION_CMD', codeqlSetup.cmd);
   } catch (error) {
     core.setFailed(error.message);
