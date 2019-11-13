@@ -37,7 +37,7 @@ async function run() {
     const codeqlSetup = await setuptools.setupCodeQL();
     core.endGroup();
    
-    let workspaceFolder = process.env['GITHUB_WORKSPACE'];
+    let workspaceFolder = process.env['RUNNER_WORKSPACE'];
     if (! workspaceFolder)
       workspaceFolder = path.resolve('..');
     const databaseFolder = path.resolve(workspaceFolder, 'database');
