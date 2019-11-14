@@ -47,7 +47,7 @@ async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, co
         }
         // Keep variables that do not exist in current environment. In addition always keep 
         // critical and CODEQL_ variables
-        if( (!process.env[key] || CRITICAL_TRACER_VARS.has(key) || key.startsWith('CODEQL_'))) {
+        if(typeof process.env[key] === 'undefined' || CRITICAL_TRACER_VARS.has(key) || key.startsWith('CODEQL_')) {
             info.env[key] = value; 
         }
     }
