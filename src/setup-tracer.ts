@@ -100,8 +100,8 @@ async function run() {
         }
 
         // docker may be a static binary, turning on SEMMLE_HANDLE_STATIC_BINARIES makes it traceable
-        core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
-        core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
+        //core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
+        //core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
         core.exportVariable('CODEQL_ACTION_TRACER_CONFIGURATION', mainTracerConfig.spec);
     } else {
         let extractorPath = '';

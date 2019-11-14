@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest] # dotnet process hangs on macOS-latest
+        os: [ macOS-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -26,6 +26,14 @@ jobs:
         language: csharp
     - name: Build SmartSql with dotnet
       run: |
+        export SEMMLE_CLRTRACER_CONSOLE=1
+        export SEMMLE_CLRTRACER_VERBOSITY=3
         cd repos/SmartSql
-        dotnet build SmartSql.sln
+        dotnet build SmartSql.sln &
+        PID=$!
+        sleep 40
+        lsof -p $PID
+        find ../../../database -type f
+        cat  ../../../database/log/build-tracer.log
+        kill -9 $PID
     - uses: ./codeql-main
