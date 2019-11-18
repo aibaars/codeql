@@ -19,7 +19,7 @@ jobs:
     - name: Copy bash to SIP free area for OSX
       if: matrix.os == 'macOS-latest'
       run: |
-         ls /Users/runner/hostedtoolcache/CodeQL/1.0.0./x64/codeql
+         ls /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql
          cp bin/libtrace.dylib /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
     - uses: ./codeql-setup
       with: 
