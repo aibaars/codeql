@@ -28,3 +28,6 @@ jobs:
         sleep 120
         ps -E -u `whoami`
         kill -9 $PID
+        cat ../../../database/log/build-tracer.log
+        ls -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
+        xattr -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/osx64/*.dylib
