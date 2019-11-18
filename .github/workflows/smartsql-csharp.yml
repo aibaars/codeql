@@ -23,7 +23,6 @@ jobs:
     - uses: ./codeql-setup
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
-        language: csharp
     - name: Build SmartSql with dotnet
       run: |
         export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -31,11 +30,12 @@ jobs:
         export SEMMLE_CLRTRACER_VERBOSITY=3
         export SEMMLE_DEBUG_TRACER=10000
         cd repos/SmartSql
-        dotnet build SmartSql.sln &
+        export SEMMLE_DEBUG_TRACER=10000
+        codeql database create ../../../database -l csharp -c "dotnet build SmartSql.sln" &
         PID=$!
         sleep 120
-        lsof -p $PID
-        find ../../../database -type f
-        cat  ../../../database/log/build-tracer.log
+        ps -E -u `whoami`
         kill -9 $PID
-    - uses: ./codeql-main
+        cat ../../../database/log/build-tracer.log
+        ls -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
+        xattr -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64/*.dylib

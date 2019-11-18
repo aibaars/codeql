@@ -1,13 +1,10 @@
 name: 'Setup CodeQL'
-description: 'Setup the CodeQL tracer'
+description: 'Setup CodeQL'
 author: 'GitHub'
 inputs:
   tools:
     description: URL of CodeQL tools
     required: true
-  language:
-    description: The language to be analysed
-    required: true
 runs:
   using: 'node12'
-  main: '../lib/setup-tracer.js'
+  main: '../lib/setup-codeql.js'
