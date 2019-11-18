@@ -25,11 +25,9 @@ jobs:
         export SEMMLE_CLRTRACER_CONSOLE=1
         export SEMMLE_CLRTRACER_VERBOSITY=3
         export SEMMLE_DEBUG_TRACER=10000
+        cp bin/libtrace.dylib /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
         cd repos/SmartSql
         export SEMMLE_DEBUG_TRACER=10000
-        which codeql
-        ls /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql
-        cp bin/libtrace.dylib /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
         codeql database create ../../../database -l csharp -c "dotnet build SmartSql.sln" &
         PID=$!
         sleep 60
