@@ -16,10 +16,10 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-#    - name: Copy bash to SIP free area for OSX
-#      if: matrix.os == 'macOS-latest'
-#      run: |
-#         cp /bin/bash /usr/local/bin/
+    - name: Copy bash to SIP free area for OSX
+      if: matrix.os == 'macOS-latest'
+      run: |
+         cp bin/libtrace.dylib /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
     - uses: ./codeql-setup
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
@@ -33,9 +33,9 @@ jobs:
         export SEMMLE_DEBUG_TRACER=10000
         codeql database create ../../../database -l csharp -c "dotnet build SmartSql.sln" &
         PID=$!
-        sleep 120
+        sleep 60
         ps -E -u `whoami`
         kill -9 $PID
-        cat ../../../database/log/build-tracer.log
-        ls -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
-        xattr -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64/*.dylib
+        ls -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/
+        xattr -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64/libtrace.dylib
+        cat  ../../../database/log/build-tracer.log
