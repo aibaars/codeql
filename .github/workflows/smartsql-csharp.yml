@@ -36,7 +36,7 @@ jobs:
         echo "===="
         dotnet --version
         dotnet --list-runtimes
-        dotnet --lits-sdks
+        dotnet --list-sdks
         echo "===="
         ls -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/
         xattr -l /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64/libtrace.dylib
