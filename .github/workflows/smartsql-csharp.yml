@@ -27,6 +27,8 @@ jobs:
         export SEMMLE_DEBUG_TRACER=10000
         cp bin/libtrace.dylib /Users/runner/hostedtoolcache/CodeQL/1.0.0/x64/codeql/tools/osx64
         cd repos/SmartSql
+        dotnet build SmartSql.sln
+        git clean -fdx
         export SEMMLE_DEBUG_TRACER=10000
         codeql database create ../../../database -l csharp -c "dotnet build SmartSql.sln" &
         PID=$!
