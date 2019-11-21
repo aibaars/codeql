@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest] # dotnet process hangs on macOS-latest
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -20,6 +20,8 @@ jobs:
       if: matrix.os == 'macOS-latest'
       run: |
          cp /bin/bash /usr/local/bin/
+         dotnet --version
+         dotnet dev-certs https ||  echo error￼
     - uses: ./codeql-setup
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
