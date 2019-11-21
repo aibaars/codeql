@@ -1,4 +1,4 @@
-name: 'Setup CodeQL'
+name: 'CodeQL: Init'
 description: 'Setup the CodeQL tracer'
 author: 'GitHub'
 inputs:
@@ -10,4 +10,4 @@ inputs:
     required: true
 runs:
   using: 'node12'
-  main: '../lib/setup-tracer.js'
+  main: '../../lib/setup-tracer.js'
