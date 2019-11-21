@@ -7,31 +7,35 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        os: [macOS-latest, ubuntu-latest]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - name: Copy bash to SIP free area for OSX
+
+    - name: OSX deps
       if: matrix.os == 'macOS-latest'
       run: |
-         cp /bin/bash /usr/local/bin/
          brew install autoconf automake
-    - name: Build with Make
+
+    - name: Configure
       run: |
         cd repos/git
         make configure
         sh ./configure
-    - uses: ./codeql-setup
-      with: 
-        tools: ${{ secrets.CODEQL_CLI_URL }}
-        language: cpp
+
+    - name: Initialize CodeQL 
+      uses: Anthophila/codeql-action/codeql/init@master
+      with:
+        languages: cpp
+
     - name: Build with Make
       run: |
         cd repos/git
-        make libgit.a
-    - uses: ./codeql-main
+        make libgit.a    
+      
+    - name: Perform CodeQL Analysis
+      uses: Anthophila/codeql-action/codeql/finish@master
+
