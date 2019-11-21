@@ -6,16 +6,6 @@ import * as setuptools from './setup-tools';
 
 async function run() {
   try {
-    // remove CodeQL from LD_PRELOAD // TODO leave other entries unchanged
-    if (process.platform == 'darwin') {
-      core.exportVariable('DYLD_INSERT_LIBRARIES', '');
-      delete process.env['DYLD_INSERT_LIBRARIES'];
-    } else if (process.platform == 'win32') {
-      // TODO unload the tracer ?
-    } else {
-      core.exportVariable('LD_PRELOAD', '');
-      delete process.env['LD_PRELOAD'];
-    }
     core.exportVariable('ODASA_TRACER_CONFIGURATION', '');
     delete process.env['ODASA_TRACER_CONFIGURATION'];
 
