@@ -20,7 +20,7 @@ jobs:
       if: matrix.os == 'macOS-latest'
       run: |
          cp /bin/bash /usr/local/bin/
-    - uses: ./codeql-setup
+    - uses: ./codeql/init
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
         language: java
@@ -30,4 +30,4 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package '-Dmaven.test.skip=true' '-Drat.skip=true' --file repos/commons-io/pom.xml
-    - uses: ./codeql-main
+    - uses: ./codeql/finish

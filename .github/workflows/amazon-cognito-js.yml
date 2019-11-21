@@ -16,9 +16,9 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - uses: ./codeql-setup
+    - uses: ./codeql/init
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
         language: javascript
-    - uses: ./codeql-main
+    - uses: ./codeql/finish
       #working-directory: repos/amazon-cognito-js

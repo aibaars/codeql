@@ -22,7 +22,7 @@ jobs:
          cp /bin/bash /usr/local/bin/
          dotnet --version
          dotnet dev-certs https ||  echo error￼
-    - uses: ./codeql-setup
+    - uses: ./codeql/init
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
         language: csharp
@@ -30,4 +30,4 @@ jobs:
       run: |
         cd repos/SmartSql
         dotnet build SmartSql.sln
-    - uses: ./codeql-main
+    - uses: ./codeql/finish
