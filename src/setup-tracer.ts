@@ -70,21 +70,8 @@ async function run() {
     await exec.exec(codeqlSetup.cmd, ['database', 'init', databaseFolder, '--language=' + language, '--source-root=' + sourceRoot ]);
 
     const mainTracerConfig = await tracerConfig(codeqlSetup, databaseFolder);
-    const dockerTracerConfig = await tracerConfig(codeqlSetup, databaseFolder, path.resolve(__dirname, '..', 'src', 'docker-compiler-settings'));
     
-    if (mainTracerConfig.spec && dockerTracerConfig.spec) {
-        // prepend docker config to main tracer config
-        const mainLines = fs.readFileSync(mainTracerConfig.spec, 'utf8').split(/\r?\n/);
-        const dockerLines = fs.readFileSync(dockerTracerConfig.spec, 'utf8').split(/\r?\n/);
-
-        const count = parseInt(mainLines[1], 10) + parseInt(dockerLines[1], 10);
-        const lines =
-         [ mainLines[0], 
-           count.toString(10),
-           ...dockerLines.slice(2),
-           ...mainLines.slice(2),
-         ];
-        fs.writeFileSync(mainTracerConfig.spec, lines.join('\n'));
+    if (mainTracerConfig.spec) {
 
         for (let entry of Object.entries(mainTracerConfig.env)) {
            core.exportVariable(entry[0], entry[1]);
@@ -98,11 +85,6 @@ async function run() {
         } else {
            core.exportVariable('LD_PRELOAD', path.join(codeqlSetup.tools, 'linux64', '${LIB}trace.so'));
         }
-
-        // docker may be a static binary, turning on SEMMLE_HANDLE_STATIC_BINARIES makes it traceable
-        core.exportVariable('SEMMLE_HANDLE_STATIC_BINARIES', 'true');
-        core.exportVariable('SEMMLE_RUNNER', path.join(codeqlSetup.tools, codeqlSetup.platform, 'runner'));
-        core.exportVariable('CODEQL_ACTION_TRACER_CONFIGURATION', mainTracerConfig.spec);
     } else {
         let extractorPath = '';
         await exec.exec(codeqlSetup.cmd, ['resolve', 'extractor', '--format=json', '--language=' + language],
