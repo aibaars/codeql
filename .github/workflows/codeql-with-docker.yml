@@ -3,6 +3,8 @@ name: CodeQL with a build in docker run
 on:
   pull_request:
   push:
+    branches-ignore:
+      - 'separate_workflow'
 
 jobs:
   build:

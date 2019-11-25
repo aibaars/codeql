@@ -1,24 +1,19 @@
-name: CodeQL end-to-end analysis (native)
+name: "Javascript end-to-end: amazon-cognito"
 
-on:
-  push:
-    branches-ignore:
-      - 'separate_workflow'
+on: [push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v1
+    - name: change to src dir
+      run: cd ./repos/amazon-cognito-js
     - name: analysis
       uses: ./codeql-self-contained
       with:
-        language: cpp
+        language: javascript
         tools: ${{ secrets.CODEQL_URL }}
         license: ${{ secrets.CODEQL_LICENSE_URL }}
 #    - uses: actions/upload-artifact@master
