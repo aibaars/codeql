@@ -56,7 +56,9 @@ async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, co
 
 async function run() {
   try {
-    const language = core.getInput('language', { required: true });
+    let languages = core.getInput('language', { required: true }).split(',');
+    languages = languages.map(x => x.trim()).filter(x => x.length > 0);
+
     const sourceRoot = path.resolve();
 
     core.startGroup('Setup CodeQL tools');
@@ -67,40 +69,44 @@ async function run() {
     if (! workspaceFolder)
       workspaceFolder = path.resolve('..');
     const databaseFolder = path.resolve(workspaceFolder, 'database');
-    await exec.exec(codeqlSetup.cmd, ['database', 'init', databaseFolder, '--language=' + language, '--source-root=' + sourceRoot ]);
 
-    const mainTracerConfig = await tracerConfig(codeqlSetup, databaseFolder);
-    
-    if (mainTracerConfig.spec) {
-
-        for (let entry of Object.entries(mainTracerConfig.env)) {
-           core.exportVariable(entry[0], entry[1]);
-        } 
-
-        core.exportVariable('ODASA_TRACER_CONFIGURATION', mainTracerConfig.spec);
-        if (process.platform == 'darwin') {
-           core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlSetup.tools, 'osx64', 'libtrace.dylib'));
-        } else if (process.platform == 'win32') {
-           await exec.exec('powershell', 
-                           // TODO use tracer.exe from CodeQL bundle
-                           [ 'src\\inject-tracer.ps1', path.resolve(__dirname, '..', 'bin', 'tracer.exe') ],
-                           {env: {'ODASA_TRACER_CONFIGURATION': mainTracerConfig.spec}});
+    let tracedLanguages : {[key: string]: TracerConfig} = {};
+    let scannedLanguages : string[] = [];
+    for (let language of languages) {
+        const languageDatabase = path.join(databaseFolder, language);
+        await exec.exec(codeqlSetup.cmd, ['database', 'init', languageDatabase, '--language=' + language, '--source-root=' + sourceRoot ]);
+        const config : TracerConfig = await tracerConfig(codeqlSetup, languageDatabase);
+        if (config.spec) {
+            tracedLanguages[language] = config;
         } else {
-           core.exportVariable('LD_PRELOAD', path.join(codeqlSetup.tools, 'linux64', '${LIB}trace.so'));
+            scannedLanguages.push(language);
         }
-    } else {
-        let extractorPath = '';
-        await exec.exec(codeqlSetup.cmd, ['resolve', 'extractor', '--format=json', '--language=' + language],
-                        { silent: true,
-                          listeners: 
-                           { stdout: (data: Buffer) => { extractorPath += data.toString(); },
-                             stderr: (data: Buffer) => { process.stderr.write(data); }
-                           }
-                         });
-    
-        const ext = process.platform == 'win32' ? '.cmd' : '.sh';
-        core.exportVariable('CODEQL_ACTION_TRACE_CMD', path.resolve(JSON.parse(extractorPath), 'tools', 'autobuild' + ext));
     }
+
+    const tracedLanguageKeys = Object.keys(tracedLanguages) 
+    if (tracedLanguageKeys.length > 1) {
+        throw new Error('Analysis of multiple compiled languages not supported: ' + tracedLanguageKeys.join(', '));
+    } else if (tracedLanguageKeys.length == 1) {
+        const mainTracerConfig = tracedLanguages[tracedLanguageKeys[0]];
+        if (mainTracerConfig.spec) { 
+            for (let entry of Object.entries(mainTracerConfig.env)) {
+               core.exportVariable(entry[0], entry[1]);
+            } 
+
+            core.exportVariable('ODASA_TRACER_CONFIGURATION', mainTracerConfig.spec);
+            if (process.platform == 'darwin') {
+               core.exportVariable('DYLD_INSERT_LIBRARIES', path.join(codeqlSetup.tools, 'osx64', 'libtrace.dylib'));
+            } else if (process.platform == 'win32') {
+               await exec.exec('powershell', 
+                               // TODO use tracer.exe from CodeQL bundle
+                               [ 'src\\inject-tracer.ps1', path.resolve(__dirname, '..', 'bin', 'tracer.exe') ],
+                               {env: {'ODASA_TRACER_CONFIGURATION': mainTracerConfig.spec}});
+            } else {
+               core.exportVariable('LD_PRELOAD', path.join(codeqlSetup.tools, 'linux64', '${LIB}trace.so'));
+            }
+        } 
+    }
+    core.exportVariable('CODEQL_ACTION_SCANNED_LANGUAGES', scannedLanguages.join(','));
 
     // TODO: make this a "private" environment variable of the action
     core.exportVariable('CODEQL_ACTION_DB', databaseFolder);

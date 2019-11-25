@@ -33,7 +33,7 @@ jobs:
     - uses: ./codeql/init
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
-        language: cpp
+        language: cpp, javascript, go
     - name: Build with Make
       run: |
         cd repos/git
