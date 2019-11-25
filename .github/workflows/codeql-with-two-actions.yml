@@ -1,6 +1,7 @@
 name: CodeQL as two separate actions
 
 on:
+  pull_request:
   push:
     branches-ignore:
       - 'separate_workflow'
@@ -19,8 +20,8 @@ jobs:
     - name: Init tracer
       uses: ./codeql-setup
       with:
-        tools: ${{ secrets.CODEQL_URL }}
-        license: ${{ secrets.CODEQL_LICENSE_URL }}
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
     - name: Copy bash to SIP free area for OSX
       if: matrix.os == 'macOS-latest'
       run: |
@@ -30,8 +31,7 @@ jobs:
          gcc -c main.c
     - name: Finalize database
       uses: ./codeql-main
-    - uses: actions/upload-artifact@master
-      with:
-        name: snapshot
-        path: project
-
+#    - uses: actions/upload-artifact@master
+#      with:
+#        name: database
+#        path: database

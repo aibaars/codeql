@@ -18,7 +18,7 @@ jobs:
         language: cpp
         tools: ${{ secrets.CODEQL_URL }}
         license: ${{ secrets.CODEQL_LICENSE_URL }}
-    - uses: actions/upload-artifact@master
-      with:
-        name: snapshot
-        path: project
+#    - uses: actions/upload-artifact@master
+#      with:
+#        name: snapshot
+#        path: project

@@ -1,0 +1,5 @@
+**/docker:
+  replace yes
+  invoke ${config_dir}/replace-docker.sh
+  prepend ${compiler}
+  trace no

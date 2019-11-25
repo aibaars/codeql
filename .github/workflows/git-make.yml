@@ -1,0 +1,37 @@
+name: "C++: GIT"
+
+on: [push]
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macOS-latest, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Copy bash to SIP free area for OSX
+      if: matrix.os == 'macOS-latest'
+      run: |
+         cp /bin/bash /usr/local/bin/
+         brew install autoconf automake
+    - name: Build with Make
+      run: |
+        cd repos/git
+        make configure
+        sh ./configure
+    - uses: ./codeql-setup
+      with: 
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
+    - name: Build with Make
+      run: |
+        cd repos/git
+        make libgit.a
+    - uses: ./codeql-main

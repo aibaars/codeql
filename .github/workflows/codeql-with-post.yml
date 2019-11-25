@@ -1,6 +1,7 @@
 name: CodeQL with post script
 
 on:
+  pull_request: 
   push:
     branches-ignore:
       - 'separate_workflow'
@@ -15,14 +16,13 @@ jobs:
     - name: CodeQL
       uses: ./codeql
       with:
-        tools: ${{ secrets.CODEQL_URL }}
-        license: ${{ secrets.CODEQL_LICENSE_URL }}
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
     - name: Run build
       run: |
-         echo "int main() {return 1;}" > main.c 
          gcc -c main.c
-    - uses: actions/upload-artifact@master
-      with:
-        name: snapshot
-        path: project
+#    - uses: actions/upload-artifact@master
+#      with:
+#        name: database
+#        path: database
 

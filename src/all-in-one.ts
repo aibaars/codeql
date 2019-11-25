@@ -46,7 +46,7 @@ async function run() {
                       lgtmConfig]);
     core.endGroup();
     
-    await exec.exec(codeqlSetup.odasa, [ 'addSnapshot',
+    await exec.exec(codeqlSetup.cmd, [ 'addSnapshot',
                              '--project', projectFolder,
                              '--name', 'snapshot', '--default-date',
                              '--default-build',
@@ -54,18 +54,18 @@ async function run() {
                              '--overwrite', 
                              '--source-location', sourceLocation]);
 
-    await exec.exec(codeqlSetup.odasa, [ 'findGeneratedCode',
+    await exec.exec(codeqlSetup.cmd, [ 'findGeneratedCode',
                               '--prepare',
                               '--project', projectFolder,
                               snapshotFolder]);
 
-    await exec.exec(codeqlSetup.odasa, [ 'buildSnapshot',
+    await exec.exec(codeqlSetup.cmd, [ 'buildSnapshot',
                                    '--fail-early', '--ignore-errors',
                                    '--overwrite',
                                    '--project', projectFolder,
                                    '--snapshot', snapshotFolder]);
 
-    await exec.exec(codeqlSetup.odasa, [ 'findGeneratedCode',
+    await exec.exec(codeqlSetup.cmd, [ 'findGeneratedCode',
                               '--output', path.join(projectFolder, 'generated_files.txt'),
                               '--project', projectFolder,
                               snapshotFolder])

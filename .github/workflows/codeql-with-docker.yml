@@ -1,0 +1,37 @@
+name: CodeQL with a build in docker run
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Init tracer
+      uses: ./codeql-setup
+      with:
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
+    - name: Copy bash to SIP free area for OSX
+      if: matrix.os == 'macOS-latest'
+      run: |
+         cp /bin/bash /usr/local/bin/
+    - name: Run docker build
+      run: |
+         docker build -t image docker
+         # supply -u to avoid file permission problems
+         docker run -u $(id -u) -v "${GITHUB_WORKSPACE}:/opt/workspace" -w /opt/workspace image gcc -c main.c
+    - name: Finalize database
+      uses: ./codeql-main
+#    - uses: actions/upload-artifact@master
+#      with:
+#        name: database
+#        path: database

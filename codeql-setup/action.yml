@@ -5,8 +5,8 @@ inputs:
   tools:
     description: URL of CodeQL tools
     required: true
-  license:
-    description: URL of CodeQL license
+  language:
+    description: The language to be analysed
     required: true
 runs:
   using: 'node12'

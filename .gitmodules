@@ -1,0 +1,12 @@
+[submodule "repos/commons-io"]
+	path = repos/commons-io
+	url = https://github.com/apache/commons-io
+[submodule "repos/git"]
+	path = repos/git
+	url = https://github.com/git/git
+[submodule "repos/SmartSql"]
+	path = repos/SmartSql
+	url = https://github.com/dotnetcore/SmartSql
+[submodule "repos/amazon-cognito-js"]
+	path = repos/amazon-cognito-js
+	url = https://github.com/aws/amazon-cognito-js
