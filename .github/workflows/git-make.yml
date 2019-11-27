@@ -8,8 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-latest, ubuntu-latest]
-        lang: [ "cpp", "python,javascript,go"] 
+        os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -34,7 +33,7 @@ jobs:
     - uses: ./codeql/init
       with: 
         tools: ${{ secrets.CODEQL_CLI_URL }}
-        language: ${{ matrix.lang }}
+        language: cpp, go, javascript, python
     - name: Build with Make
       run: |
         cd repos/git
