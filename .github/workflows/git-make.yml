@@ -39,3 +39,8 @@ jobs:
         cd repos/git
         make libgit.a
     - uses: ./codeql/finish
+    - uses: actions/upload-artifact@master
+      with:
+        name: results
+        path: ../codeql_results/sarif
+

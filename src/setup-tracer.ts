@@ -68,7 +68,8 @@ async function run() {
     let workspaceFolder = process.env['RUNNER_WORKSPACE'];
     if (! workspaceFolder)
       workspaceFolder = path.resolve('..');
-    const databaseFolder = path.resolve(workspaceFolder, 'database');
+    const codeqlResultFolder = path.resolve(workspaceFolder, 'codeql_results');
+    const databaseFolder = path.resolve(codeqlResultFolder, 'db');
 
     let tracedLanguages : {[key: string]: TracerConfig} = {};
 
@@ -111,7 +112,7 @@ async function run() {
 
 
     // TODO: make this a "private" environment variable of the action
-    core.exportVariable('CODEQL_ACTION_DB', databaseFolder);
+    core.exportVariable('CODEQL_ACTION_RESULTS', codeqlResultFolder);
     core.exportVariable('CODEQL_ACTION_CMD', codeqlSetup.cmd);
   } catch (error) {
     core.setFailed(error.message);
