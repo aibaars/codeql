@@ -84,8 +84,8 @@ async function run() {
     }
 
     const tracedLanguageKeys = Object.keys(tracedLanguages) 
-    if (tracedLanguageKeys.length > 1) {
-        throw new Error('Analysis of multiple compiled languages not supported: ' + tracedLanguageKeys.join(', '));
+    if (tracedLanguageKeys.length > 0 && languages.length > 1) {
+        throw new Error('Cannot analyse a compiled language in combination with other languages: ' + languages.join(', '));
     } else if (tracedLanguageKeys.length == 1) {
         const mainTracerConfig = tracedLanguages[tracedLanguageKeys[0]];
         if (mainTracerConfig.spec) { 
