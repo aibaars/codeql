@@ -12,26 +12,13 @@ async function run() {
 
     const codeqlCmd = process.env['CODEQL_ACTION_CMD'] || 'CODEQL_ACTION_CMD';
     const databaseFolder = process.env['CODEQL_ACTION_DB'] || 'CODEQL_ACTION_DB';
-    const scannedLanguagesVar = process.env['CODEQL_ACTION_SCANNED_LANGUAGES'] || '';
-    const scannedLanguages = scannedLanguagesVar.split(',').map(x => x.trim()).filter(x => x.length > 0);
+    const tracedLanguage = process.env['CODEQL_ACTION_TRACED_LANGUAGE'];
 
-    for (let language of scannedLanguages) {
-        let extractorPath = '';
-        await exec.exec(codeqlCmd, ['resolve', 'extractor', '--format=json', '--language=' + language],
-                        { silent: true,
-                          listeners: 
-                           { stdout: (data: Buffer) => { extractorPath += data.toString(); },
-                             stderr: (data: Buffer) => { process.stderr.write(data); }
-                           }
-                         });
-    
-        const ext = process.platform == 'win32' ? '.cmd' : '.sh';
-        await exec.exec(codeqlCmd, ['database', 'trace-command', path.join(databaseFolder, language), '--', 
-                         path.resolve(JSON.parse(extractorPath), 'tools', 'autobuild' + ext)]);
+    if (tracedLanguage) {
+        await exec.exec(codeqlCmd, ['database', 'finalize', path.join(databaseFolder, tracedLanguage)]);
     }
 
     for (let database of fs.readdirSync(databaseFolder)) {
-        await exec.exec(codeqlCmd, ['database', 'finalize', path.join(databaseFolder, database)]);
         await exec.exec(codeqlCmd, ['database', 'analyze', path.join(databaseFolder, database), 
                                     '--format=sarif-latest', '--output=' + path.join(databaseFolder, database) + '.sarif',
                                     database + '-lgtm.qls']);

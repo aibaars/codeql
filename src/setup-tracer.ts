@@ -7,7 +7,7 @@ import * as tmp from 'tmp';
 import * as setuptools from './setup-tools';
 
 type TracerConfig = {
-    spec?: string;
+    spec: string;
     env: {[key: string]: string};
 };
 
@@ -30,9 +30,9 @@ async function tracerConfig(codeql: setuptools.CodeQLSetup, database: string, co
 
     const env : {[key: string]: string} = JSON.parse(fs.readFileSync(envFile, 'utf-8'));
 
-    const info : TracerConfig = { env: {} };
     const config = env['ODASA_TRACER_CONFIGURATION'];
-    info.spec = config;
+    const info : TracerConfig = { spec: config, env: {} };
+
     // Extract critical tracer variables from the environment
     for (let entry of Object.entries(env)) {
         const key = entry[0];
@@ -71,22 +71,24 @@ async function run() {
     const databaseFolder = path.resolve(workspaceFolder, 'database');
 
     let tracedLanguages : {[key: string]: TracerConfig} = {};
-    let scannedLanguages : string[] = [];
+
     for (let language of languages) {
         const languageDatabase = path.join(databaseFolder, language);
-        await exec.exec(codeqlSetup.cmd, ['database', 'init', languageDatabase, '--language=' + language, '--source-root=' + sourceRoot ]);
-        const config : TracerConfig = await tracerConfig(codeqlSetup, languageDatabase);
-        if (config.spec) {
+        if (['cpp', 'java', 'csharp'].includes(language)) {
+            await exec.exec(codeqlSetup.cmd, ['database', 'init', languageDatabase, '--language=' + language, '--source-root=' + sourceRoot ]);
+            const config : TracerConfig = await tracerConfig(codeqlSetup, languageDatabase);
             tracedLanguages[language] = config;
         } else {
-            scannedLanguages.push(language);
+            await exec.exec(codeqlSetup.cmd, ['database', 'create', languageDatabase, 
+                                              '--language=' + language, '--source-root=' + sourceRoot ]);
         }
     }
 
     const tracedLanguageKeys = Object.keys(tracedLanguages) 
-    if (tracedLanguageKeys.length > 0 && languages.length > 1) {
-        throw new Error('Cannot analyse a compiled language in combination with other languages: ' + languages.join(', '));
+    if (tracedLanguageKeys.length > 1) {
+        throw new Error('Analysis of multiple compiled languages not supported: ' + languages.join(', '));
     } else if (tracedLanguageKeys.length == 1) {
+        core.exportVariable('CODEQL_ACTION_TRACED_LANGUAGE', tracedLanguageKeys[0]);
         const mainTracerConfig = tracedLanguages[tracedLanguageKeys[0]];
         if (mainTracerConfig.spec) { 
             for (let entry of Object.entries(mainTracerConfig.env)) {
@@ -106,7 +108,7 @@ async function run() {
             }
         } 
     }
-    core.exportVariable('CODEQL_ACTION_SCANNED_LANGUAGES', scannedLanguages.join(','));
+
 
     // TODO: make this a "private" environment variable of the action
     core.exportVariable('CODEQL_ACTION_DB', databaseFolder);
