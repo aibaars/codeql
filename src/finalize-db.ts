@@ -32,6 +32,9 @@ async function run() {
 
     for (let database of fs.readdirSync(databaseFolder)) {
         await exec.exec(codeqlCmd, ['database', 'finalize', path.join(databaseFolder, database)]);
+        await exec.exec(codeqlCmd, ['database', 'analyze', path.join(databaseFolder, database), 
+                                    '--format=sarif-latest', '--output=' + path.join(databaseFolder, database) + '.sarif',
+                                    database + '-lgtm.qls']);
     }
   } catch (error) {
     core.setFailed(error.message);
