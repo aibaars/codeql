@@ -2,16 +2,16 @@ name: "Test typescript-action"
 on:
   pull_request:
   push:
-    branches:
-      - master
-      - 'releases/*'
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-
-    - run: npm ci
-    - run: npm run build
-    - run: npm test
+    - name: Init tracer
+      uses: ./codeql-setup
+      with:
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
+      env:
+        RUNNER_DEBUG: '1'
