@@ -11,7 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-
-    - run: npm ci
-    - run: npm run build
-    - run: npm test
+    - uses: actions/checkout@v1
+    - name: Init tracer
+      uses: ./codeql-setup
+      with:
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
+      env:
+        RUNNER_DEBUG: '1'
