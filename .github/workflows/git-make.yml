@@ -25,17 +25,12 @@ jobs:
         cd repos/git
         make configure
         sh ./configure
-
-    - name: Initialize CodeQL 
-      uses: Anthophila/codeql-action/codeql/init@master
-      with:
-        languages: cpp
-
+    - uses: ./codeql-setup
+      with: 
+        tools: ${{ secrets.CODEQL_CLI_URL }}
+        language: cpp
     - name: Build with Make
       run: |
         cd repos/git
-        make libgit.a    
-      
-    - name: Perform CodeQL Analysis
-      uses: Anthophila/codeql-action/codeql/finish@master
-
+        make libgit.a
+    - uses: ./codeql-main
