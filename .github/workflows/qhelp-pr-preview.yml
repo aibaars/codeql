@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - "rc/*"
+      - aibaars/pr-qhelp-check-debug
     paths:
       - "ruby/**/*.qhelp"
 
