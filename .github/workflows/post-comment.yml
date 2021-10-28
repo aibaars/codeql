@@ -12,6 +12,10 @@ jobs:
   post_comment:
     runs-on: ubuntu-latest
     steps:
+      - run: |
+          echo '${{ toJSON( github.event) }}'
+          cat "${{  github.event_path }}"
+
       - name: Download artifact
         uses: dawidd6/action-download-artifact@af92a8455a59214b7b932932f2662fdefbd78126
         with:
