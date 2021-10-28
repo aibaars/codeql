@@ -23,7 +23,6 @@ jobs:
           workflow_conclusion: success
           name: comment
       - run: |
-          PR=$(grep -o '^[0-9]\+$' pr.txt)
-          cat comment.txt | gh pr comment "${PR}" --repo "${{ github.repository }}" -F -
+          cat comment.txt | gh pr comment "${{ github.event.workflow_run.pull_requests[0].number }}" --repo "${{ github.repository }}" -F -
         env:
           GITHUB_TOKEN: ${{ github.token }}
