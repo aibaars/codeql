@@ -183,6 +183,10 @@ getTarget
 | calls.rb:473:1:473:27 | call to new | calls.rb:114:5:114:16 | new |
 | calls.rb:474:1:474:27 | call to new | calls.rb:114:5:114:16 | new |
 | calls.rb:475:1:475:27 | call to new | calls.rb:114:5:114:16 | new |
+| calls.rb:485:1:485:31 | call to singleton | calls.rb:478:5:480:7 | singleton |
+| calls.rb:491:1:491:32 | call to singleton | calls.rb:478:5:480:7 | singleton |
+| calls.rb:498:1:498:32 | call to singleton | calls.rb:478:5:480:7 | singleton |
+| calls.rb:504:1:504:13 | call to singleton | calls.rb:478:5:480:7 | singleton |
 | hello.rb:12:5:12:24 | call to include | calls.rb:107:5:107:20 | include |
 | hello.rb:14:16:14:20 | call to hello | hello.rb:2:5:4:7 | hello |
 | hello.rb:20:16:20:20 | call to super | hello.rb:13:5:15:7 | message |
@@ -285,7 +289,9 @@ unresolvedCall
 | calls.rb:475:1:475:33 | call to baz_2 |
 | calls.rb:479:9:479:46 | call to puts |
 | calls.rb:482:5:482:15 | call to extend |
-| calls.rb:485:1:485:31 | call to singleton |
+| calls.rb:488:5:488:32 | call to extend |
+| calls.rb:496:1:496:51 | call to extend |
+| calls.rb:502:1:502:32 | call to extend |
 | hello.rb:20:16:20:26 | ... + ... |
 | hello.rb:20:16:20:34 | ... + ... |
 | hello.rb:20:16:20:40 | ... + ... |

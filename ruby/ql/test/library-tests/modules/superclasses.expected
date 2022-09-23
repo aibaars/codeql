@@ -93,6 +93,10 @@ calls.rb:
 
 #  477| ExtendSingletonMethod
 
+#  487| ExtendSingletonMethod2
+
+#  493| ExtendSingletonMethod3
+
 hello.rb:
 #    1| EnglishWords
 
