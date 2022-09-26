@@ -7,8 +7,8 @@ private import codeql.ruby.ApiGraphs
 private import codeql.ruby.CFG
 private import codeql.ruby.Concepts
 private import codeql.ruby.DataFlow
-private import codeql.ruby.dataflow.FlowSummary
 private import codeql.ruby.dataflow.internal.DataFlowDispatch
+private import codeql.ruby.frameworks.data.ModelsAsData
 
 /** Provides modeling for the `Kernel` class. */
 module Kernel {
@@ -168,13 +168,15 @@ module Kernel {
     override DataFlow::Node getCode() { result = this.getArgument(0) }
   }
 
-  private class TapSummary extends SimpleSummarizedCallable {
-    TapSummary() { this = "tap" }
-
-    override predicate propagatesFlowExt(string input, string output, boolean preservesValue) {
-      input = "Argument[self]" and
-      output = ["ReturnValue", "Argument[block].Parameter[0]"] and
-      preservesValue = true
+  /** Flow summaries for the `Kernel` module. */
+  private class KernelFlowSummary extends ModelInput::SummaryModelCsv {
+    override predicate row(string row) {
+      row =
+        [
+          // Kernel#tap
+          ";Kernel;Method[tap];Argument[self];ReturnValue;value",
+          ";Kernel;Method[tap];Argument[self];Argument[block].Parameter[0];value",
+        ]
     }
   }
 }

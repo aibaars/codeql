@@ -3,7 +3,7 @@
  */
 
 private import codeql.ruby.AST
-private import codeql.ruby.dataflow.FlowSummary
+private import codeql.ruby.frameworks.data.ModelsAsData
 
 /**
  * Provides modeling for the `Object` class.
@@ -33,13 +33,31 @@ module Object {
       ]
   }
 
-  private class DupSummary extends SimpleSummarizedCallable {
-    DupSummary() { this = "dup" }
+  /**
+   * Type summaries for the `Object` class.
+   */
+  private class ObjectTypeSummary extends ModelInput::TypeModelCsv {
+    override predicate row(string row) {
+      row =
+        [
+          // class Object < BasicObject
+          ";BasicObject;;Object;",
+          // Object.include(Kernel)
+          ";Kernel;;Object;",
+          // Object.new
+          ";Object;;;Member[Object].Instance",
+          // Object#dup : Object
+          ";Object;;Object;Method[dup].ReturnValue",
+        ]
+    }
+  }
 
-    override predicate propagatesFlowExt(string input, string output, boolean preservesValue) {
-      input = "Argument[self]" and
-      output = "ReturnValue" and
-      preservesValue = true
+  /** Flow summaries for the `Object` class. */
+  private class ObjectFlowSummary extends ModelInput::SummaryModelCsv {
+    override predicate row(string row) {
+      row =
+        // Object#dup
+        ";Object;Method[dup];Argument[self];ReturnValue;value"
     }
   }
 }

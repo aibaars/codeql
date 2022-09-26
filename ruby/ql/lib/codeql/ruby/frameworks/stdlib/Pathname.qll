@@ -124,6 +124,8 @@ module Pathname {
       // package1;type1;package2;type2;path
       row =
         [
+          // class Pathname < Object
+          ";Object;;Pathname;",
           // Pathname.new : Pathname
           ";Pathname;;;Member[Pathname].Instance",
           // Pathname#+(path) : Pathname
