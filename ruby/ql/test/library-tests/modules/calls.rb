@@ -447,7 +447,7 @@ ConditionalInstanceMethods.new.m2
 ConditionalInstanceMethods.new.m3 # currently unable to resolve
 ConditionalInstanceMethods.new.m4 # currently unable to resolve
 ConditionalInstanceMethods.new.m5 # NoMethodError
-exit
+exit if rand < 0.5
 EsotericInstanceMethods = Class.new do
     [0,1,2].each do
         def foo

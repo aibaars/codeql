@@ -1095,6 +1095,11 @@ enclosingModule
 | calls.rb:449:1:449:33 | call to m5 | calls.rb:1:1:485:62 | calls.rb |
 | calls.rb:450:1:450:4 | call to exit | calls.rb:1:1:485:62 | calls.rb |
 | calls.rb:450:1:450:4 | self | calls.rb:1:1:485:62 | calls.rb |
+| calls.rb:450:1:450:18 | ... if ... | calls.rb:1:1:485:62 | calls.rb |
+| calls.rb:450:9:450:12 | call to rand | calls.rb:1:1:485:62 | calls.rb |
+| calls.rb:450:9:450:12 | self | calls.rb:1:1:485:62 | calls.rb |
+| calls.rb:450:9:450:18 | ... < ... | calls.rb:1:1:485:62 | calls.rb |
+| calls.rb:450:16:450:18 | 0.5 | calls.rb:1:1:485:62 | calls.rb |
 | calls.rb:451:1:451:23 | EsotericInstanceMethods | calls.rb:1:1:485:62 | calls.rb |
 | calls.rb:451:1:469:3 | ... = ... | calls.rb:1:1:485:62 | calls.rb |
 | calls.rb:451:27:451:31 | Class | calls.rb:1:1:485:62 | calls.rb |
