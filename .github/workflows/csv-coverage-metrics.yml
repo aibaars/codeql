@@ -38,7 +38,7 @@ jobs:
           path: metrics-java.sarif
           retention-days: 20
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@main
+        uses: github/codeql-action/upload-sarif@71510779c25b2bd66d6434d3f94a74dac811e3fd
         with:
           sarif_file: metrics-java.sarif
   
@@ -65,6 +65,6 @@ jobs:
           path: metrics-csharp.sarif
           retention-days: 20
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@main
+        uses: github/codeql-action/upload-sarif@71510779c25b2bd66d6434d3f94a74dac811e3fd
         with:
           sarif_file: metrics-csharp.sarif
