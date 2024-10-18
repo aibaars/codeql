@@ -94,7 +94,7 @@ class FormatArgsExprTree extends StandardPostOrderTree, FormatArgsExpr {
     result = this.getArg(i).getExpr()
     or
     result =
-      any(ImplicitVariableAccess v, Format f, int index, int kind |
+      any(FormatTemplateVariableAccess v, Format f, int index, int kind |
         f = this.getFormat(index) and
         (
           v.getArgument() = f.getArgumentRef() and kind = 0
@@ -110,7 +110,7 @@ class FormatArgsExprTree extends StandardPostOrderTree, FormatArgsExpr {
   }
 }
 
-class ImplictVariableAccessTree extends LeafTree, ImplicitVariableAccess { }
+class FormatTemplateVariableAccessTree extends LeafTree, FormatTemplateVariableAccess { }
 
 class ItemTree extends LeafTree, Item {
   ItemTree() {
