@@ -101,7 +101,13 @@ class _:
     """
 
 
-@annotate(PathExpr)
+class PathExprBase(Expr):
+    """
+    A path expression or a variable access in a formatting template. See `PathExpr` and `FormatTemplateVariableAccess` for further details.
+    """
+
+
+@annotate(PathExpr, replace_bases={Expr: PathExprBase})
 class _:
     """
     A path expression. For example:
@@ -114,7 +120,7 @@ class _:
     """
 
 
-@annotate(IfExpr)
+@ annotate(IfExpr)
 class _:
     """
     An `if` expression. For example:
@@ -133,8 +139,8 @@ class _:
     """
 
 
-@annotate(LetExpr)
-@rust.doc_test_signature("(maybe_some: Option<String>) -> ()")
+@ annotate(LetExpr)
+@ rust.doc_test_signature("(maybe_some: Option<String>) -> ()")
 class _:
     """
     A `let` expression. For example:
@@ -146,7 +152,7 @@ class _:
     """
 
 
-@annotate(BlockExpr)
+@ annotate(BlockExpr)
 class _:
     """
     A block expression. For example:
@@ -164,7 +170,7 @@ class _:
     """
 
 
-@annotate(LoopExpr)
+@ annotate(LoopExpr)
 class _:
     """
     A loop expression. For example:
@@ -200,7 +206,7 @@ class CallExprBase(Expr):
     attrs: list["Attr"] | child
 
 
-@annotate(CallExpr, replace_bases={Expr: CallExprBase})
+@ annotate(CallExpr, replace_bases={Expr: CallExprBase})
 class _:
     """
     A function call expression. For example:
@@ -215,7 +221,7 @@ class _:
     attrs: drop
 
 
-@annotate(MethodCallExpr, replace_bases={Expr: CallExprBase})
+@ annotate(MethodCallExpr, replace_bases={Expr: CallExprBase})
 class _:
     """
     A method call expression. For example:
@@ -228,8 +234,8 @@ class _:
     attrs: drop
 
 
-@annotate(MatchArm)
-@rust.doc_test_signature("(x: i32) -> i32")
+@ annotate(MatchArm)
+@ rust.doc_test_signature("(x: i32) -> i32")
 class _:
     """
     A match arm. For example:
@@ -248,8 +254,8 @@ class _:
     """
 
 
-@annotate(MatchExpr)
-@rust.doc_test_signature("(x: i32) -> i32")
+@ annotate(MatchExpr)
+@ rust.doc_test_signature("(x: i32) -> i32")
 class _:
     """
     A match expression. For example:
@@ -268,7 +274,7 @@ class _:
     """
 
 
-@annotate(ContinueExpr)
+@ annotate(ContinueExpr)
 class _:
     """
     A continue expression. For example:
@@ -289,7 +295,7 @@ class _:
     """
 
 
-@annotate(BreakExpr)
+@ annotate(BreakExpr)
 class _:
     """
     A break expression. For example:
@@ -318,8 +324,8 @@ class _:
   """
 
 
-@annotate(ReturnExpr)
-@rust.doc_test_signature(None)
+@ annotate(ReturnExpr)
+@ rust.doc_test_signature(None)
 class _:
     """
     A return expression. For example:
@@ -336,8 +342,8 @@ class _:
     """
 
 
-@annotate(BecomeExpr)
-@rust.doc_test_signature(None)
+@ annotate(BecomeExpr)
+@ rust.doc_test_signature(None)
 class _:
     """
     A `become` expression. For example:
@@ -353,7 +359,7 @@ class _:
     """
 
 
-@annotate(YieldExpr)
+@ annotate(YieldExpr)
 class _:
     """
     A `yield` expression. For example:
@@ -366,7 +372,7 @@ class _:
     """
 
 
-@annotate(YeetExpr)
+@ annotate(YeetExpr)
 class _:
     """
     A `yeet` expression. For example:
@@ -378,7 +384,7 @@ class _:
     """
 
 
-@annotate(RecordExprField)
+@ annotate(RecordExprField)
 class _:
     """
     A field in a record expression. For example `a: 1` in:
@@ -388,7 +394,7 @@ class _:
     """
 
 
-@annotate(RecordExpr)
+@ annotate(RecordExpr)
 class _:
     """
     A record expression. For example:
@@ -401,7 +407,7 @@ class _:
     """
 
 
-@annotate(FieldExpr)
+@ annotate(FieldExpr)
 class _:
     """
     A field access expression. For example:
@@ -411,7 +417,7 @@ class _:
     """
 
 
-@annotate(AwaitExpr)
+@ annotate(AwaitExpr)
 class _:
     """
     An `await` expression. For example:
@@ -424,7 +430,7 @@ class _:
     """
 
 
-@annotate(CastExpr)
+@ annotate(CastExpr)
 class _:
     """
     A cast expression. For example:
@@ -434,7 +440,7 @@ class _:
     """
 
 
-@annotate(RefExpr)
+@ annotate(RefExpr)
 class _:
     """
     A reference expression. For example:
@@ -447,7 +453,7 @@ class _:
     """
 
 
-@annotate(PrefixExpr)
+@ annotate(PrefixExpr)
 class _:
     """
     A unary operation expression. For example:
@@ -459,7 +465,7 @@ class _:
     """
 
 
-@annotate(BinaryExpr)
+@ annotate(BinaryExpr)
 class _:
     """
     A binary operation expression. For example:
@@ -473,7 +479,7 @@ class _:
     """
 
 
-@annotate(RangeExpr)
+@ annotate(RangeExpr)
 class _:
     """
     A range expression. For example:
@@ -488,7 +494,7 @@ class _:
     """
 
 
-@annotate(IndexExpr)
+@ annotate(IndexExpr)
 class _:
     """
     An index expression. For example:
@@ -499,7 +505,7 @@ class _:
     """
 
 
-@annotate(ClosureExpr)
+@ annotate(ClosureExpr)
 class _:
     """
     A closure expression. For example:
@@ -515,7 +521,7 @@ class _:
     """
 
 
-@annotate(TupleExpr)
+@ annotate(TupleExpr)
 class _:
     """
     A tuple expression. For example:
@@ -526,7 +532,7 @@ class _:
     """
 
 
-@annotate(ArrayExpr)
+@ annotate(ArrayExpr)
 class _:
     """
     An array expression. For example:
@@ -537,7 +543,7 @@ class _:
     """
 
 
-@annotate(LiteralExpr)
+@ annotate(LiteralExpr)
 class _:
     """
     A literal expression. For example:
@@ -554,7 +560,7 @@ class _:
     """
 
 
-@annotate(UnderscoreExpr)
+@ annotate(UnderscoreExpr)
 class _:
     """
     An underscore expression. For example:
@@ -564,7 +570,7 @@ class _:
     """
 
 
-@annotate(OffsetOfExpr)
+@ annotate(OffsetOfExpr)
 class _:
     """
      An `offset_of` expression. For example:
@@ -574,7 +580,7 @@ class _:
     """
 
 
-@annotate(AsmExpr)
+@ annotate(AsmExpr)
 class _:
     """
     An inline assembly expression. For example:
@@ -586,7 +592,7 @@ class _:
     """
 
 
-@annotate(LetStmt)
+@ annotate(LetStmt)
 class _:
     """
     A let statement. For example:
@@ -603,7 +609,7 @@ class _:
     """
 
 
-@annotate(ExprStmt)
+@ annotate(ExprStmt)
 class _:
     """
     An expression statement. For example:
@@ -615,7 +621,7 @@ class _:
     """
 
 
-@annotate(WildcardPat)
+@ annotate(WildcardPat)
 class _:
     """
     A wildcard pattern. For example:
@@ -625,7 +631,7 @@ class _:
     """
 
 
-@annotate(TuplePat)
+@ annotate(TuplePat)
 class _:
     """
     A tuple pattern. For example:
@@ -636,7 +642,7 @@ class _:
     """
 
 
-@annotate(OrPat)
+@ annotate(OrPat)
 class _:
     """
     An or pattern. For example:
@@ -648,7 +654,7 @@ class _:
     """
 
 
-@annotate(RecordPatField)
+@ annotate(RecordPatField)
 class _:
     """
     A field in a record pattern. For example `a: 1` in:
@@ -658,7 +664,7 @@ class _:
     """
 
 
-@annotate(RecordPat)
+@ annotate(RecordPat)
 class _:
     """
     A record pattern. For example:
@@ -671,7 +677,7 @@ class _:
     """
 
 
-@annotate(RangePat)
+@ annotate(RangePat)
 class _:
     """
     A range pattern. For example:
@@ -685,7 +691,7 @@ class _:
     """
 
 
-@annotate(SlicePat)
+@ annotate(SlicePat)
 class _:
     """
     A slice pattern. For example:
@@ -699,7 +705,7 @@ class _:
     """
 
 
-@annotate(PathPat)
+@ annotate(PathPat)
 class _:
     """
     A path pattern. For example:
@@ -712,7 +718,7 @@ class _:
     """
 
 
-@annotate(LiteralPat)
+@ annotate(LiteralPat)
 class _:
     """
     A literal pattern. For example:
@@ -725,7 +731,7 @@ class _:
     """
 
 
-@annotate(IdentPat)
+@ annotate(IdentPat)
 class _:
     """
     A binding pattern. For example:
@@ -744,7 +750,7 @@ class _:
     """
 
 
-@annotate(TupleStructPat)
+@ annotate(TupleStructPat)
 class _:
     """
     A tuple struct pattern. For example:
@@ -758,7 +764,7 @@ class _:
     """
 
 
-@annotate(RefPat)
+@ annotate(RefPat)
 class _:
     """
     A reference pattern. For example:
@@ -771,7 +777,7 @@ class _:
     """
 
 
-@annotate(BoxPat)
+@ annotate(BoxPat)
 class _:
     """
     A box pattern. For example:
@@ -784,7 +790,7 @@ class _:
     """
 
 
-@annotate(ConstBlockPat)
+@ annotate(ConstBlockPat)
 class _:
     """
     A const block pattern. For example:
@@ -797,7 +803,7 @@ class _:
     """
 
 
-@annotate(Abi)
+@ annotate(Abi)
 class _:
     """
     A Abi. For example:
@@ -807,7 +813,7 @@ class _:
     """
 
 
-@annotate(ArgList)
+@ annotate(ArgList)
 class _:
     """
     A ArgList. For example:
@@ -817,7 +823,7 @@ class _:
     """
 
 
-@annotate(ArrayType)
+@ annotate(ArrayType)
 class _:
     """
     A ArrayType. For example:
@@ -827,7 +833,7 @@ class _:
     """
 
 
-@annotate(AssocItem)
+@ annotate(AssocItem)
 class _:
     """
     A AssocItem. For example:
@@ -837,7 +843,7 @@ class _:
     """
 
 
-@annotate(AssocItemList)
+@ annotate(AssocItemList)
 class _:
     """
     A AssocItemList. For example:
@@ -847,7 +853,7 @@ class _:
     """
 
 
-@annotate(AssocTypeArg)
+@ annotate(AssocTypeArg)
 class _:
     """
     A AssocTypeArg. For example:
@@ -857,7 +863,7 @@ class _:
     """
 
 
-@annotate(Attr)
+@ annotate(Attr)
 class _:
     """
     A Attr. For example:
@@ -867,7 +873,7 @@ class _:
     """
 
 
-@annotate(ClosureBinder)
+@ annotate(ClosureBinder)
 class _:
     """
     A ClosureBinder. For example:
@@ -877,7 +883,7 @@ class _:
     """
 
 
-@annotate(Const)
+@ annotate(Const)
 class _:
     """
     A Const. For example:
@@ -887,7 +893,7 @@ class _:
     """
 
 
-@annotate(ConstArg)
+@ annotate(ConstArg)
 class _:
     """
     A ConstArg. For example:
@@ -897,7 +903,7 @@ class _:
     """
 
 
-@annotate(ConstParam)
+@ annotate(ConstParam)
 class _:
     """
     A ConstParam. For example:
@@ -907,7 +913,7 @@ class _:
     """
 
 
-@annotate(DynTraitType)
+@ annotate(DynTraitType)
 class _:
     """
     A DynTraitType. For example:
@@ -917,7 +923,7 @@ class _:
     """
 
 
-@annotate(Enum)
+@ annotate(Enum)
 class _:
     """
     A Enum. For example:
@@ -927,7 +933,7 @@ class _:
     """
 
 
-@annotate(ExternBlock)
+@ annotate(ExternBlock)
 class _:
     """
     A ExternBlock. For example:
@@ -937,7 +943,7 @@ class _:
     """
 
 
-@annotate(ExternCrate)
+@ annotate(ExternCrate)
 class _:
     """
     A ExternCrate. For example:
@@ -947,7 +953,7 @@ class _:
     """
 
 
-@annotate(ExternItem)
+@ annotate(ExternItem)
 class _:
     """
     A ExternItem. For example:
@@ -957,7 +963,7 @@ class _:
     """
 
 
-@annotate(ExternItemList)
+@ annotate(ExternItemList)
 class _:
     """
     A ExternItemList. For example:
@@ -967,7 +973,7 @@ class _:
     """
 
 
-@annotate(FieldList)
+@ annotate(FieldList)
 class _:
     """
     A FieldList. For example:
@@ -977,7 +983,7 @@ class _:
     """
 
 
-@annotate(FnPtrType)
+@ annotate(FnPtrType)
 class _:
     """
     A FnPtrType. For example:
@@ -987,7 +993,7 @@ class _:
     """
 
 
-@annotate(ForExpr)
+@ annotate(ForExpr)
 class _:
     """
     A ForExpr. For example:
@@ -997,7 +1003,7 @@ class _:
     """
 
 
-@annotate(ForType)
+@ annotate(ForType)
 class _:
     """
     A ForType. For example:
@@ -1007,7 +1013,7 @@ class _:
     """
 
 
-@annotate(FormatArgsArg)
+@ annotate(FormatArgsArg)
 class _:
     """
     A FormatArgsArg. For example:
@@ -1017,7 +1023,7 @@ class _:
     """
 
 
-@annotate(FormatArgsExpr)
+@ annotate(FormatArgsExpr)
 class _:
     """
     A FormatArgsExpr. For example:
@@ -1027,7 +1033,7 @@ class _:
     """
 
 
-@annotate(GenericArg)
+@ annotate(GenericArg)
 class _:
     """
     A GenericArg. For example:
@@ -1037,7 +1043,7 @@ class _:
     """
 
 
-@annotate(GenericParam)
+@ annotate(GenericParam)
 class _:
     """
     A GenericParam. For example:
@@ -1047,7 +1053,7 @@ class _:
     """
 
 
-@annotate(GenericParamList)
+@ annotate(GenericParamList)
 class _:
     """
     A GenericParamList. For example:
@@ -1057,7 +1063,7 @@ class _:
     """
 
 
-@annotate(Impl)
+@ annotate(Impl)
 class _:
     """
     A Impl. For example:
@@ -1067,7 +1073,7 @@ class _:
     """
 
 
-@annotate(ImplTraitType)
+@ annotate(ImplTraitType)
 class _:
     """
     A ImplTraitType. For example:
@@ -1077,7 +1083,7 @@ class _:
     """
 
 
-@annotate(InferType)
+@ annotate(InferType)
 class _:
     """
     A InferType. For example:
@@ -1087,7 +1093,7 @@ class _:
     """
 
 
-@annotate(Item)
+@ annotate(Item)
 class _:
     """
     A Item. For example:
@@ -1097,7 +1103,7 @@ class _:
     """
 
 
-@annotate(ItemList)
+@ annotate(ItemList)
 class _:
     """
     A ItemList. For example:
@@ -1107,7 +1113,7 @@ class _:
     """
 
 
-@annotate(LetElse)
+@ annotate(LetElse)
 class _:
     """
     A LetElse. For example:
@@ -1117,7 +1123,7 @@ class _:
     """
 
 
-@annotate(Lifetime)
+@ annotate(Lifetime)
 class _:
     """
     A Lifetime. For example:
@@ -1127,7 +1133,7 @@ class _:
     """
 
 
-@annotate(LifetimeArg)
+@ annotate(LifetimeArg)
 class _:
     """
     A LifetimeArg. For example:
@@ -1137,7 +1143,7 @@ class _:
     """
 
 
-@annotate(LifetimeParam)
+@ annotate(LifetimeParam)
 class _:
     """
     A LifetimeParam. For example:
@@ -1147,7 +1153,7 @@ class _:
     """
 
 
-@annotate(MacroCall)
+@ annotate(MacroCall)
 class _:
     """
     A MacroCall. For example:
@@ -1158,7 +1164,7 @@ class _:
     expanded: optional[AstNode] | child | rust.detach
 
 
-@annotate(MacroDef)
+@ annotate(MacroDef)
 class _:
     """
     A MacroDef. For example:
@@ -1168,7 +1174,7 @@ class _:
     """
 
 
-@annotate(MacroExpr)
+@ annotate(MacroExpr)
 class _:
     """
     A MacroExpr. For example:
@@ -1178,8 +1184,8 @@ class _:
     """
 
 
-@annotate(MacroItems)
-@rust.doc_test_signature(None)
+@ annotate(MacroItems)
+@ rust.doc_test_signature(None)
 class _:
     """
     A sequence of items generated by a `MacroCall`. For example:
@@ -1191,7 +1197,7 @@ class _:
     """
 
 
-@annotate(MacroPat)
+@ annotate(MacroPat)
 class _:
     """
     A MacroPat. For example:
@@ -1201,7 +1207,7 @@ class _:
     """
 
 
-@annotate(MacroRules)
+@ annotate(MacroRules)
 class _:
     """
     A MacroRules. For example:
@@ -1211,8 +1217,8 @@ class _:
     """
 
 
-@annotate(MacroStmts)
-@rust.doc_test_signature(None)
+@ annotate(MacroStmts)
+@ rust.doc_test_signature(None)
 class _:
     """
     A sequence of statements generated by a `MacroCall`. For example:
@@ -1224,7 +1230,7 @@ class _:
     """
 
 
-@annotate(MacroType)
+@ annotate(MacroType)
 class _:
     """
     A MacroType. For example:
@@ -1234,7 +1240,7 @@ class _:
     """
 
 
-@annotate(MatchArmList)
+@ annotate(MatchArmList)
 class _:
     """
     A MatchArmList. For example:
@@ -1244,7 +1250,7 @@ class _:
     """
 
 
-@annotate(MatchGuard)
+@ annotate(MatchGuard)
 class _:
     """
     A MatchGuard. For example:
@@ -1254,7 +1260,7 @@ class _:
     """
 
 
-@annotate(Meta)
+@ annotate(Meta)
 class _:
     """
     A Meta. For example:
@@ -1264,7 +1270,7 @@ class _:
     """
 
 
-@annotate(Name)
+@ annotate(Name)
 class _:
     """
     A Name. For example:
@@ -1274,7 +1280,7 @@ class _:
     """
 
 
-@annotate(NameRef)
+@ annotate(NameRef)
 class _:
     """
     A NameRef. For example:
@@ -1284,7 +1290,7 @@ class _:
     """
 
 
-@annotate(NeverType)
+@ annotate(NeverType)
 class _:
     """
     A NeverType. For example:
@@ -1294,7 +1300,7 @@ class _:
     """
 
 
-@annotate(Param)
+@ annotate(Param)
 class _:
     """
     A Param. For example:
@@ -1304,7 +1310,7 @@ class _:
     """
 
 
-@annotate(ParamList)
+@ annotate(ParamList)
 class _:
     """
     A ParamList. For example:
@@ -1314,7 +1320,7 @@ class _:
     """
 
 
-@annotate(ParenExpr)
+@ annotate(ParenExpr)
 class _:
     """
     A ParenExpr. For example:
@@ -1324,7 +1330,7 @@ class _:
     """
 
 
-@annotate(ParenPat)
+@ annotate(ParenPat)
 class _:
     """
     A ParenPat. For example:
@@ -1334,7 +1340,7 @@ class _:
     """
 
 
-@annotate(ParenType)
+@ annotate(ParenType)
 class _:
     """
     A ParenType. For example:
@@ -1344,7 +1350,7 @@ class _:
     """
 
 
-@annotate(PathSegment)
+@ annotate(PathSegment)
 class _:
     """
     A PathSegment. For example:
@@ -1354,7 +1360,7 @@ class _:
     """
 
 
-@annotate(PathType)
+@ annotate(PathType)
 class _:
     """
     A PathType. For example:
@@ -1364,7 +1370,7 @@ class _:
     """
 
 
-@annotate(PtrType)
+@ annotate(PtrType)
 class _:
     """
     A PtrType. For example:
@@ -1374,7 +1380,7 @@ class _:
     """
 
 
-@annotate(RecordExprFieldList)
+@ annotate(RecordExprFieldList)
 class _:
     """
     A RecordExprFieldList. For example:
@@ -1384,7 +1390,7 @@ class _:
     """
 
 
-@annotate(RecordField)
+@ annotate(RecordField)
 class _:
     """
     A RecordField. For example:
@@ -1394,7 +1400,7 @@ class _:
     """
 
 
-@annotate(RecordFieldList)
+@ annotate(RecordFieldList)
 class _:
     """
     A RecordFieldList. For example:
@@ -1404,7 +1410,7 @@ class _:
     """
 
 
-@annotate(RecordPatFieldList)
+@ annotate(RecordPatFieldList)
 class _:
     """
     A RecordPatFieldList. For example:
@@ -1414,7 +1420,7 @@ class _:
     """
 
 
-@annotate(RefType)
+@ annotate(RefType)
 class _:
     """
     A RefType. For example:
@@ -1424,7 +1430,7 @@ class _:
     """
 
 
-@annotate(Rename)
+@ annotate(Rename)
 class _:
     """
     A Rename. For example:
@@ -1434,7 +1440,7 @@ class _:
     """
 
 
-@annotate(RestPat)
+@ annotate(RestPat)
 class _:
     """
     A RestPat. For example:
@@ -1444,7 +1450,7 @@ class _:
     """
 
 
-@annotate(RetType)
+@ annotate(RetType)
 class _:
     """
     A RetType. For example:
@@ -1454,7 +1460,7 @@ class _:
     """
 
 
-@annotate(ReturnTypeSyntax)
+@ annotate(ReturnTypeSyntax)
 class _:
     """
     A ReturnTypeSyntax. For example:
@@ -1464,7 +1470,7 @@ class _:
     """
 
 
-@annotate(SelfParam)
+@ annotate(SelfParam)
 class _:
     """
     A SelfParam. For example:
@@ -1474,7 +1480,7 @@ class _:
     """
 
 
-@annotate(SliceType)
+@ annotate(SliceType)
 class _:
     """
     A SliceType. For example:
@@ -1484,7 +1490,7 @@ class _:
     """
 
 
-@annotate(SourceFile)
+@ annotate(SourceFile)
 class _:
     """
     A SourceFile. For example:
@@ -1494,7 +1500,7 @@ class _:
     """
 
 
-@annotate(Static)
+@ annotate(Static)
 class _:
     """
     A Static. For example:
@@ -1504,7 +1510,7 @@ class _:
     """
 
 
-@annotate(StmtList)
+@ annotate(StmtList)
 class _:
     """
     A StmtList. For example:
@@ -1514,7 +1520,7 @@ class _:
     """
 
 
-@annotate(Struct)
+@ annotate(Struct)
 class _:
     """
     A Struct. For example:
@@ -1524,7 +1530,7 @@ class _:
     """
 
 
-@annotate(TokenTree)
+@ annotate(TokenTree)
 class _:
     """
     A TokenTree. For example:
@@ -1534,7 +1540,7 @@ class _:
     """
 
 
-@annotate(Trait)
+@ annotate(Trait)
 class _:
     """
     A Trait. For example:
@@ -1544,7 +1550,7 @@ class _:
     """
 
 
-@annotate(TraitAlias)
+@ annotate(TraitAlias)
 class _:
     """
     A TraitAlias. For example:
@@ -1554,7 +1560,7 @@ class _:
     """
 
 
-@annotate(TryExpr)
+@ annotate(TryExpr)
 class _:
     """
     A TryExpr. For example:
@@ -1564,7 +1570,7 @@ class _:
     """
 
 
-@annotate(TupleField)
+@ annotate(TupleField)
 class _:
     """
     A TupleField. For example:
@@ -1574,7 +1580,7 @@ class _:
     """
 
 
-@annotate(TupleFieldList)
+@ annotate(TupleFieldList)
 class _:
     """
     A TupleFieldList. For example:
@@ -1584,7 +1590,7 @@ class _:
     """
 
 
-@annotate(TupleType)
+@ annotate(TupleType)
 class _:
     """
     A TupleType. For example:
@@ -1594,7 +1600,7 @@ class _:
     """
 
 
-@annotate(TypeAlias)
+@ annotate(TypeAlias)
 class _:
     """
     A TypeAlias. For example:
@@ -1604,7 +1610,7 @@ class _:
     """
 
 
-@annotate(TypeArg)
+@ annotate(TypeArg)
 class _:
     """
     A TypeArg. For example:
@@ -1614,7 +1620,7 @@ class _:
     """
 
 
-@annotate(TypeBound)
+@ annotate(TypeBound)
 class _:
     """
     A TypeBound. For example:
@@ -1624,7 +1630,7 @@ class _:
     """
 
 
-@annotate(TypeBoundList)
+@ annotate(TypeBoundList)
 class _:
     """
     A TypeBoundList. For example:
@@ -1634,7 +1640,7 @@ class _:
     """
 
 
-@annotate(TypeParam)
+@ annotate(TypeParam)
 class _:
     """
     A TypeParam. For example:
@@ -1644,7 +1650,7 @@ class _:
     """
 
 
-@annotate(Union)
+@ annotate(Union)
 class _:
     """
     A Union. For example:
@@ -1654,7 +1660,7 @@ class _:
     """
 
 
-@annotate(Use)
+@ annotate(Use)
 class _:
     """
     A Use. For example:
@@ -1664,7 +1670,7 @@ class _:
     """
 
 
-@annotate(UseTree)
+@ annotate(UseTree)
 class _:
     """
     A UseTree. For example:
@@ -1674,7 +1680,7 @@ class _:
     """
 
 
-@annotate(UseTreeList)
+@ annotate(UseTreeList)
 class _:
     """
     A UseTreeList. For example:
@@ -1684,7 +1690,7 @@ class _:
     """
 
 
-@annotate(Variant)
+@ annotate(Variant)
 class _:
     """
     A Variant. For example:
@@ -1694,7 +1700,7 @@ class _:
     """
 
 
-@annotate(VariantList)
+@ annotate(VariantList)
 class _:
     """
     A VariantList. For example:
@@ -1704,7 +1710,7 @@ class _:
     """
 
 
-@annotate(Visibility)
+@ annotate(Visibility)
 class _:
     """
     A Visibility. For example:
@@ -1714,7 +1720,7 @@ class _:
     """
 
 
-@annotate(WhereClause)
+@ annotate(WhereClause)
 class _:
     """
     A WhereClause. For example:
@@ -1724,7 +1730,7 @@ class _:
     """
 
 
-@annotate(WherePred)
+@ annotate(WherePred)
 class _:
     """
     A WherePred. For example:
@@ -1734,7 +1740,7 @@ class _:
     """
 
 
-@annotate(WhileExpr)
+@ annotate(WhileExpr)
 class _:
     """
     A WhileExpr. For example:
@@ -1744,26 +1750,26 @@ class _:
     """
 
 
-@annotate(Function, add_bases=[Callable])
+@ annotate(Function, add_bases=[Callable])
 class _:
     param_list: drop
     attrs: drop
 
 
-@annotate(ClosureExpr, add_bases=[Callable])
+@ annotate(ClosureExpr, add_bases=[Callable])
 class _:
     param_list: drop
     attrs: drop
 
 
-@qltest.skip
-@synth.on_arguments(parent="FormatArgsExpr", index=int, kind=int)
-class FormatTemplateVariableAccess(Expr):
+@ qltest.skip
+@ synth.on_arguments(parent="FormatArgsExpr", index=int, kind=int)
+class FormatTemplateVariableAccess(PathExprBase):
     pass
 
 
-@qltest.skip
-@synth.on_arguments(parent=FormatArgsExpr, index=int, text=string, offset=int)
+@ qltest.skip
+@ synth.on_arguments(parent=FormatArgsExpr, index=int, text=string, offset=int)
 class Format(Locatable):
     """
     A format element in a formatting template. For example the `{}` in:
@@ -1775,8 +1781,8 @@ class Format(Locatable):
     index: int
 
 
-@qltest.skip
-@synth.on_arguments(parent=FormatArgsExpr, index=int, kind=int, name=string, positional=boolean, offset=int)
+@ qltest.skip
+@ synth.on_arguments(parent=FormatArgsExpr, index=int, kind=int, name=string, positional=boolean, offset=int)
 class FormatArgument(Locatable):
     """
     An argument in a format element in a formatting template. For example the `width`, `precision`, and `value` in:
